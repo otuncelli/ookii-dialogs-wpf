@@ -15,19 +15,18 @@
     <tags>ookii dialogs wpf windows-presentation-foundation progress-dialog task-dialog credential-dialog common-file-dialog</tags>
     <copyright>Copyright (c) 2009 Sven Groot</copyright>
     <frameworkAssemblies>
-      <frameworkAssembly assemblyName="PresentationCore" targetFramework=".NETFramework4.5" />
-      <frameworkAssembly assemblyName="PresentationFramework" targetFramework=".NETFramework4.5" />
-      <frameworkAssembly assemblyName="WindowsBase" targetFramework=".NETFramework4.5" />
-      <frameworkAssembly assemblyName="System.Security" targetFramework=".NETFramework4.5" />
-      <frameworkAssembly assemblyName="System.Drawing" targetFramework=".NETFramework4.5" />
-      <frameworkAssembly assemblyName="System.Design" targetFramework=".NETFramework4.5" />
-      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.5" />
-      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="PresentationCore" targetFramework=".NETFramework3.0" />
+      <frameworkAssembly assemblyName="PresentationFramework" targetFramework=".NETFramework3.0" />
+      <frameworkAssembly assemblyName="WindowsBase" targetFramework=".NETFramework3.0" />
+      <frameworkAssembly assemblyName="System.Security" targetFramework=".NETFramework3.0" />
+      <frameworkAssembly assemblyName="System.Drawing" targetFramework=".NETFramework3.0" />
+      <frameworkAssembly assemblyName="System.Design" targetFramework=".NETFramework3.0" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework3.0" />
     </frameworkAssemblies>
   </metadata>
   <files>
-    <file src="bin\$configuration$\Ookii.Dialogs.Wpf.dll" target="lib\net45\" />
-    <file src="bin\$configuration$\Ookii.Dialogs.Wpf.pdb" target="lib\net45\" />
-    <file src="bin\$configuration$\Ookii.Dialogs.Wpf.xml" target="lib\net45\" />
+    <file src="bin\$configuration$\Ookii.Dialogs.Wpf.dll" target="lib\net30\" />
+    <file src="bin\$configuration$\Ookii.Dialogs.Wpf.pdb" target="lib\net30\" />
+    <file src="bin\$configuration$\Ookii.Dialogs.Wpf.xml" target="lib\net30\" />
   </files>
 </package>

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace Ookii.Dialogs.Wpf
@@ -21,7 +18,7 @@ namespace Ookii.Dialogs.Wpf
         public AnimationResource(string resourceFile, int resourceId)
         {
             if( resourceFile == null )
-                throw new ArgumentNullException("resourceFile");
+                throw new ArgumentNullException(nameof(resourceFile));
 
             ResourceFile = resourceFile;
             ResourceId = resourceId;
@@ -53,7 +50,7 @@ namespace Ookii.Dialogs.Wpf
         public static AnimationResource GetShellAnimation(ShellAnimation animation)
         {
             if( !Enum.IsDefined(typeof(ShellAnimation), animation) )
-                throw new ArgumentOutOfRangeException("animation");
+                throw new ArgumentOutOfRangeException(nameof(animation));
 
             return new AnimationResource("shell32.dll", (int)animation);
         }

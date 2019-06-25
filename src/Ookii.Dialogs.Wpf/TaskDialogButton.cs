@@ -1,8 +1,6 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 using System.Drawing.Design;
 
@@ -64,7 +62,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Appearance"), Description("The type of the button."), DefaultValue(ButtonType.Custom)]
         public ButtonType ButtonType
         {
-            get { return _type; }
+            get => _type;
             set 
             {
                 if( value != ButtonType.Custom )
@@ -102,7 +100,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The text of the note associated with a command link button."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
         public string CommandLinkNote
         {
-            get { return _commandLinkNote ?? string.Empty; }
+            get => _commandLinkNote ?? string.Empty;
             set
             { 
                 _commandLinkNote = value;
@@ -122,7 +120,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates if the button is the default button on the dialog."), DefaultValue(false)]
         public bool Default
         {
-            get { return _default; }
+            get => _default;
             set
             {
                 _default = value;
@@ -153,22 +151,18 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates whether the Task Dialog button or command link should have a User Account Control (UAC) shield icon (in other words, whether the action invoked by the button requires elevation)."), DefaultValue(false)] 
         public bool ElevationRequired
         {
-            get { return _elevationRequired; }
+            get => _elevationRequired;
             set 
             { 
                 _elevationRequired = value;
-                if( Owner != null )
-                    Owner.SetButtonElevationRequired(this);
+                Owner?.SetButtonElevationRequired(this);
             }
         }
 	
 	
         internal override int Id
         {
-            get
-            {
-                return base.Id;
-            }
+            get => base.Id;
             set
             {
                 if( base.Id != value )
@@ -223,15 +217,7 @@ namespace Ookii.Dialogs.Wpf
         /// If the <see cref="TaskDialogButton"/> is currently associated with a <see cref="TaskDialog"/>, the
         /// <see cref="TaskDialog.Buttons"/> collection of that <see cref="TaskDialog"/>; otherwise, <see langword="null" />.
         /// </value>
-        protected override System.Collections.IEnumerable ItemCollection
-        {
-            get 
-            {
-                if( Owner != null )
-                    return Owner.Buttons;
-                return null;
-            }
-        }
+        protected override System.Collections.IEnumerable ItemCollection => Owner?.Buttons;
 
         private void CheckDuplicateButton(ButtonType type, TaskDialogItem itemToExclude)
         {

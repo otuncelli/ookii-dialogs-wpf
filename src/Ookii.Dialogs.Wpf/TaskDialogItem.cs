@@ -2,9 +2,6 @@
 // BSD license; see LICENSE for details.
 using System;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using System.Collections;
 
 namespace Ookii.Dialogs.Wpf
@@ -35,8 +32,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="container">The <see cref="IContainer"/> to add the <see cref="TaskDialogItem"/> to.</param>
         protected TaskDialogItem(IContainer container)
         {
-            if( container != null )
-                container.Add(this);
+            container?.Add(this);
 
             InitializeComponent();
         }
@@ -64,7 +60,7 @@ namespace Ookii.Dialogs.Wpf
         [Browsable(false)]
         public TaskDialog Owner
         {
-            get { return _owner; }
+            get => _owner;
             internal set 
             { 
                 _owner = value;
@@ -87,7 +83,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The text of the item."), DefaultValue("")]
         public string Text
         {
-            get { return _text ?? string.Empty; }
+            get => _text ?? string.Empty;
             set 
             {
                 _text = value;
@@ -108,14 +104,11 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates whether the item is enabled."), DefaultValue(true)]
         public bool Enabled
         {
-            get { return _enabled; }
+            get => _enabled;
             set 
             { 
                 _enabled = value;
-                if( Owner != null )
-                {
-                    Owner.SetItemEnabled(this);
-                }
+                Owner?.SetItemEnabled(this);
             }
         }
 
@@ -140,7 +133,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Data"), Description("The id of the item."), DefaultValue(0)]
         internal virtual int Id
         {
-            get { return _id; }
+            get => _id;
             set 
             {
                 CheckDuplicateId(null, value);
@@ -202,8 +195,7 @@ namespace Ookii.Dialogs.Wpf
         /// </remarks>
         protected void UpdateOwner()
         {
-            if( Owner != null )
-                Owner.UpdateDialog();
+            Owner?.UpdateDialog();
         }
 
         internal virtual void CheckDuplicate(TaskDialogItem itemToExclude)

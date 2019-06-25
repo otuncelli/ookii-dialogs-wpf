@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ookii.Dialogs.Wpf</RootNamespace>
     <AssemblyName>Ookii.Dialogs.Wpf</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -49,7 +49,6 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
@@ -73,6 +72,7 @@
     <Compile Include="Interop\ComDlgResources.cs" />
     <Compile Include="Interop\COMGuids.cs" />
     <Compile Include="Interop\ErrorHelper.cs" />
+    <Compile Include="Interop\IOperationsProgressDialog.cs" />
     <Compile Include="Interop\IProgressDialog.cs" />
     <Compile Include="Interop\ShellComInterfaces.cs" />
     <Compile Include="Interop\ShellWrapperDefinitions.cs" />
@@ -80,6 +80,12 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ProgressBarState.cs" />
     <Compile Include="ProgressBarStyle.cs" />
+    <Compile Include="OperationsProgressDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OperationsProgressDialog.designer.cs">
+      <DependentUpon>OperationsProgressDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProgressDialog.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -127,6 +133,9 @@
   <ItemGroup>
     <EmbeddedResource Include="CredentialDialog.bmp" />
     <CodeAnalysisDictionary Include="CustomDictionary.xml" />
+    <EmbeddedResource Include="OperationsProgressDialog.resx">
+      <DependentUpon>OperationsProgressDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ProgressDialog.bmp" />
     <EmbeddedResource Include="TaskDialog.bmp" />
     <EmbeddedResource Include="VistaFolderBrowserDialog.bmp" />

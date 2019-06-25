@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Runtime.ConstrainedExecution;
@@ -12,26 +10,14 @@ namespace Ookii.Dialogs.Wpf
     {
         public const int ErrorFileNotFound = 2;
 
-        public static bool IsWindowsVistaOrLater
-        {
-            get
-            {
-                return Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version >= new Version(6, 0, 6000);
-            }
-        }
+        public static bool IsWindowsVistaOrLater => Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version >= new Version(6, 0, 6000);
 
-        public static bool IsWindowsXPOrLater
-        {
-            get
-            {
-                return Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version >= new Version(5, 1, 2600);
-            }
-        }
+        public static bool IsWindowsXPOrLater => Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version >= new Version(5, 1, 2600);
 
         #region LoadLibrary
 
         [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern Ookii.Dialogs.Wpf.SafeModuleHandle LoadLibraryEx(
+        public static extern SafeModuleHandle LoadLibraryEx(
             string lpFileName,
             IntPtr hFile,
             LoadLibraryExFlags dwFlags
@@ -330,7 +316,7 @@ namespace Ookii.Dialogs.Wpf
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 4)]
         internal struct KNOWNFOLDER_DEFINITION
         {
-            internal NativeMethods.KF_CATEGORY category;
+            internal KF_CATEGORY category;
             [MarshalAs(UnmanagedType.LPWStr)]
             internal string pszName;
             [MarshalAs(UnmanagedType.LPWStr)]
@@ -351,7 +337,7 @@ namespace Ookii.Dialogs.Wpf
             [MarshalAs(UnmanagedType.LPWStr)]
             internal string pszSecurity;
             internal uint dwAttributes;
-            internal NativeMethods.KF_DEFINITION_FLAGS kfdFlags;
+            internal KF_DEFINITION_FLAGS kfdFlags;
             internal Guid ftidType;
         }
 
@@ -387,14 +373,14 @@ namespace Ookii.Dialogs.Wpf
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
 
-        public static Interop.IShellItem CreateItemFromParsingName(string path)
+        public static IShellItem CreateItemFromParsingName(string path)
         {
             object item;
             Guid guid = new Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe"); // IID_IShellItem
-            int hr = NativeMethods.SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out item);
+            int hr = SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out item);
             if( hr != 0 )
                 throw new System.ComponentModel.Win32Exception(hr);
-            return (Interop.IShellItem)item;
+            return (IShellItem)item;
         }
 
         #endregion

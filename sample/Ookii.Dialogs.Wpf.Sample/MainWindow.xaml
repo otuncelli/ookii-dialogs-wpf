@@ -18,6 +18,7 @@
                 <ComboBoxItem>Vista-style Folder Browser Dialog</ComboBoxItem>
                 <ComboBoxItem>Vista-style Open File Dialog</ComboBoxItem>
                 <ComboBoxItem>Vista-style Save File Dialog</ComboBoxItem>
+                <ComboBoxItem IsSelected="True">Operations Progress Dialog</ComboBoxItem>
             </ComboBox.Items>
         </ComboBox>
         <Button Grid.Column="2" Height="23" Margin="4,8,8,0" Padding="8,0" HorizontalAlignment="Right" Name="_showDialogButton" VerticalAlignment="Top" IsDefault="True" Click="_showDialogButton_Click">_Show dialog</Button>

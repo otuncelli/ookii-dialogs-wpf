@@ -5,23 +5,12 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using Ookii.Dialogs.Wpf.Interop;
 
 namespace Ookii.Dialogs.Wpf
 {
-    /// <summary>
-    /// Represents a dialog that can be used to report progress to the user.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    ///   This class provides a wrapper for the native Windows IProgressDialog API.
-    /// </para>
-    /// <para>
-    ///   The <see cref="ProgressDialog"/> class requires Windows 2000, Windows Me, or newer versions of Windows.
-    /// </para>
-    /// </remarks>
-    /// <threadsafety static="true" instance="false" />
     [DefaultEvent("DoWork"), DefaultProperty("Text"), Description("Represents a dialog that can be used to report progress to the user.")]
-    public partial class ProgressDialog : Component
+    public partial class OperationsProgressDialog : Component
     {
         private class ProgressChangedData
         {
@@ -30,14 +19,8 @@ namespace Ookii.Dialogs.Wpf
             public object UserState { get; set; }
         }
 
-        private string _windowTitle;
-        private string _text;
-        private string _description;
-        private Interop.IProgressDialog _dialog;
+        private IOperationsProgressDialog _dialog;
         private string _cancellationText;
-        private bool _useCompactPathsForText;
-        private bool _useCompactPathsForDescription;
-        private SafeModuleHandle _currentAnimationModuleHandle;
         private bool _cancellationPending;
 
         /// <summary>
@@ -55,23 +38,23 @@ namespace Ookii.Dialogs.Wpf
         public event RunWorkerCompletedEventHandler RunWorkerCompleted;
 
         /// <summary>
-        /// Event raised when <see cref="ReportProgress(int,string,string,object)"/> is called.
+        /// Event raised when <see cref="ReportProgress(string,string,string,uint,uint,ulong,ulong,uint,uint)"/> is called.
         /// </summary>
         public event ProgressChangedEventHandler ProgressChanged;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProgressDialog"/> class.
+        /// Initializes a new instance of the <see cref="OperationsProgressDialog"/> class.
         /// </summary>
-        public ProgressDialog()
+        public OperationsProgressDialog()
             : this(null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProgressDialog"/> class, adding it to the specified container.
+        /// Initializes a new instance of the <see cref="OperationsProgressDialog"/> class, adding it to the specified container.
         /// </summary>
         /// <param name="container">The <see cref="IContainer"/> to which the component should be added.</param>
-        public ProgressDialog(IContainer container)
+        public OperationsProgressDialog(IContainer container)
         {
             container?.Add(this);
 
@@ -80,159 +63,8 @@ namespace Ookii.Dialogs.Wpf
             ProgressBarStyle = ProgressBarStyle.ProgressBar;
             ShowCancelButton = true;
             MinimizeBox = true;
-            // Set a default animation for XP.
-            if( !NativeMethods.IsWindowsVistaOrLater )
-                Animation = AnimationResource.GetShellAnimation(ShellAnimation.FlyingPapers);
         }
-
-        /// <summary>
-        /// Gets or sets the text in the progress dialog's title bar.
-        /// </summary>
-        /// <value>
-        /// The text in the progress dialog's title bar. The default value is an empty string.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   This property must be set before <see cref="ShowDialog()"/> or <see cref="Show()"/> is called. Changing property has
-        ///   no effect while the dialog is being displayed.
-        /// </para>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The text in the progress dialog's title bar."), DefaultValue("")]
-        public string WindowTitle
-        {
-            get => _windowTitle ?? string.Empty;
-            set => _windowTitle = value;
-        }
-
-        /// <summary>
-        /// Gets or sets a short description of the operation being carried out.
-        /// </summary>
-        /// <value>
-        /// A short description of the operation being carried. The default value is an empty string.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   This is the primary message to the user.
-        /// </para>
-        /// <para>
-        ///   This property can be changed while the dialog is running, but may only be changed from the thread which
-        ///   created the progress dialog. The recommended method to change this value while the dialog is running
-        ///   is to use the <see cref="ReportProgress(int,string,string)"/> method.
-        /// </para>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("A short description of the operation being carried out.")]
-        public string Text
-        {
-            get => _text ?? string.Empty;
-            set 
-            { 
-                _text = value;
-                _dialog?.SetLine(1, Text, UseCompactPathsForText, IntPtr.Zero);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates whether path strings in the <see cref="Text"/> property should be compacted if
-        /// they are too large to fit on one line.
-        /// </summary>
-        /// <value>
-        /// <see langword="true"/> to compact path strings if they are too large to fit on one line; otherwise,
-        /// <see langword="false"/>. The default value is <see langword="false"/>.
-        /// </value>
-        /// <remarks>
-        /// <note>
-        ///   This property requires Windows Vista or later. On older versions of Windows, it has no effect.
-        /// </note>
-        /// <para>
-        ///   This property can be changed while the dialog is running, but may only be changed from the thread which
-        ///   created the progress dialog.
-        /// </para>
-        /// </remarks>
-        [Category("Behavior"), Description("Indicates whether path strings in the Text property should be compacted if they are too large to fit on one line."), DefaultValue(false)]
-        public bool UseCompactPathsForText
-        {
-            get => _useCompactPathsForText;
-            set 
-            {
-                _useCompactPathsForText = value;
-                _dialog?.SetLine(1, Text, UseCompactPathsForText, IntPtr.Zero);
-            }
-        }
-	
-        /// <summary>
-        /// Gets or sets additional details about the operation being carried out.
-        /// </summary>
-        /// <value>
-        /// Additional details about the operation being carried out. The default value is an empty string.
-        /// </value>
-        /// <remarks>
-        /// This text is used to provide additional details beyond the <see cref="Text"/> property.
-        /// </remarks>
-        /// <remarks>
-        /// <para>
-        ///   This property can be changed while the dialog is running, but may only be changed from the thread which
-        ///   created the progress dialog. The recommended method to change this value while the dialog is running
-        ///   is to use the <see cref="ReportProgress(int,string,string)"/> method.
-        /// </para>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("Additional details about the operation being carried out."), DefaultValue("")]
-        public string Description
-        {
-            get => _description ?? string.Empty;
-            set 
-            { 
-                _description = value;
-                _dialog?.SetLine(2, Description, UseCompactPathsForDescription, IntPtr.Zero);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates whether path strings in the <see cref="Description"/> property should be compacted if
-        /// they are too large to fit on one line.
-        /// </summary>
-        /// <value>
-        /// <see langword="true"/> to compact path strings if they are too large to fit on one line; otherwise,
-        /// <see langword="false"/>. The default value is <see langword="false"/>.
-        /// </value>
-        /// <remarks>
-        /// <note>
-        ///   This property requires Windows Vista or later. On older versions of Windows, it has no effect.
-        /// </note>
-        /// <para>
-        ///   This property can be changed while the dialog is running, but may only be changed from the thread which
-        ///   created the progress dialog.
-        /// </para>
-        /// </remarks>
-        [Category("Behavior"), Description("Indicates whether path strings in the Description property should be compacted if they are too large to fit on one line."), DefaultValue(false)]
-        public bool UseCompactPathsForDescription
-        {
-            get => _useCompactPathsForDescription;
-            set
-            {
-                _useCompactPathsForDescription = value;
-                _dialog?.SetLine(2, Description, UseCompactPathsForDescription, IntPtr.Zero);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the text that will be shown after the Cancel button is pressed.
-        /// </summary>
-        /// <value>
-        /// The text that will be shown after the Cancel button is pressed.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   This property must be set before <see cref="ShowDialog()"/> or <see cref="Show()"/> is called. Changing property has
-        ///   no effect while the dialog is being displayed.
-        /// </para>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The text that will be shown after the Cancel button is pressed."), DefaultValue("")]
-        public string CancellationText
-        {
-            get => _cancellationText ?? string.Empty;
-            set => _cancellationText = value;
-        }
-
+        
         /// <summary>
         /// Gets or sets a value that indicates whether an estimate of the remaining time will be shown.
         /// </summary>
@@ -313,26 +145,6 @@ namespace Ookii.Dialogs.Wpf
                 return _cancellationPending;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the animation to show on the progress dialog.
-        /// </summary>
-        /// <value>
-        /// An instance of <see cref="AnimationResource"/> which specifies the animation to show, or <see langword="null"/>
-        /// to show no animation. The default value is <see langword="null"/>.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   This property has no effect on Windows Vista or later. On Windows XP, this property will default to
-        ///   a flying papers animation.
-        /// </para>
-        /// <para>
-        ///   This property must be set before <see cref="ShowDialog()"/> or <see cref="Show()"/> is called. Changing property has
-        ///   no effect while the dialog is being displayed.
-        /// </para>
-        /// </remarks>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public AnimationResource Animation { get; set; }
 
         /// <summary>
         /// Gets or sets a value that indicates whether a regular or marquee style progress bar should be used.
@@ -507,59 +319,33 @@ namespace Ookii.Dialogs.Wpf
             RunProgressDialog(owner == null ? NativeMethods.GetActiveWindow() : new WindowInteropHelper(owner).Handle, argument);
         }
 
-        /// <summary>
-        /// Updates the dialog's progress bar.
-        /// </summary>
-        /// <param name="percentProgress">The percentage, from 0 to 100, of the operation that is complete.</param>
-        /// <remarks>
-        /// <para>
-        ///   Call this method from the <see cref="DoWork"/> event handler if you want to report progress.
-        /// </para>
-        /// <para>
-        ///   This method has no effect is <see cref="ProgressBarStyle"/> is <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.MarqueeProgressBar"/>
-        ///   or <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.None"/>.
-        /// </para>
-        /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="percentProgress"/> is out of range.</exception>
-        /// <exception cref="InvalidOperationException">The progress dialog is not currently being displayed.</exception>
-        public void ReportProgress(int percentProgress)
+        public void ReportProgress(string current, string source, string destination, uint currentProgress, uint totalProgress, ulong currentSize, ulong totalSize, uint currentItems, uint totalItems)
         {
-            ReportProgress(percentProgress, null, null, null);
-        }
-
-        /// <summary>
-        /// Updates the dialog's progress bar.
-        /// </summary>
-        /// <param name="percentProgress">The percentage, from 0 to 100, of the operation that is complete.</param>
-        /// <param name="text">The new value of the progress dialog's primary text message, or <see langword="null"/> to leave the value unchanged.</param>
-        /// <param name="description">The new value of the progress dialog's additional description message, or <see langword="null"/> to leave the value unchanged.</param>
-        /// <remarks>Call this method from the <see cref="DoWork"/> event handler if you want to report progress.</remarks>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="percentProgress"/> is out of range.</exception>
-        /// <exception cref="InvalidOperationException">The progress dialog is not currently being displayed.</exception>
-        public void ReportProgress(int percentProgress, string text, string description)
-        {
-            ReportProgress(percentProgress, text, description, null);
-        }
-
-        /// <summary>
-        /// Updates the dialog's progress bar.
-        /// </summary>
-        /// <param name="percentProgress">The percentage, from 0 to 100, of the operation that is complete.</param>
-        /// <param name="text">The new value of the progress dialog's primary text message, or <see langword="null"/> to leave the value unchanged.</param>
-        /// <param name="description">The new value of the progress dialog's additional description message, or <see langword="null"/> to leave the value unchanged.</param>
-        /// <param name="userState">A state object that will be passed to the <see cref="ProgressChanged"/> event handler.</param>
-        /// <remarks>Call this method from the <see cref="DoWork"/> event handler if you want to report progress.</remarks>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="percentProgress"/> is out of range.</exception>
-        /// <exception cref="InvalidOperationException">The progress dialog is not currently being displayed.</exception>
-        public void ReportProgress(int percentProgress, string text, string description, object userState)
-        {
-            if( percentProgress < 0 || percentProgress > 100 )
-                throw new ArgumentOutOfRangeException(nameof(percentProgress));
-            if( _dialog == null )
+            if (_dialog == null)
                 throw new InvalidOperationException(Properties.Resources.ProgressDialogNotRunningError);
-            _backgroundWorker.ReportProgress(percentProgress, new ProgressChangedData() { Text = text, Description = description, UserState = userState });
+
+            if (currentProgress < 0 || currentProgress > 100)
+                throw new ArgumentOutOfRangeException(nameof(currentProgress));
+
+            if (totalProgress < 0 || totalProgress > 100)
+                throw new ArgumentOutOfRangeException(nameof(totalProgress));
+
+            IShellItem sourceItem = source != null ? NativeMethods.CreateItemFromParsingName(source) : null;
+            IShellItem currentItem = current != null ? NativeMethods.CreateItemFromParsingName(current) : null;
+            IShellItem destItem = destination != null ? NativeMethods.CreateItemFromParsingName(destination) : null;
+
+            _dialog.UpdateLocations(sourceItem, destItem, currentItem);
+            _dialog.UpdateProgress(currentProgress, totalProgress, currentSize, totalSize, currentItems, totalItems);
         }
 
+        public void SetOperation(OperationsProgressDialogAction operation)
+        {
+            if (_dialog == null)
+                throw new InvalidOperationException(Properties.Resources.ProgressDialogNotRunningError);
+
+            _dialog.SetOperation(operation);
+        }
+        
         /// <summary>
         /// Raises the <see cref="DoWork"/> event.
         /// </summary>
@@ -595,56 +381,38 @@ namespace Ookii.Dialogs.Wpf
             if( _backgroundWorker.IsBusy )
                 throw new InvalidOperationException(Properties.Resources.ProgressDialogRunning);
 
-            if( Animation != null )
-            {
-                try
-                {
-                    _currentAnimationModuleHandle = Animation.LoadLibrary();
-                }
-                catch( Win32Exception ex )
-                {
-                    throw new InvalidOperationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.AnimationLoadErrorFormat, ex.Message), ex);
-                }
-                catch( System.IO.FileNotFoundException ex )
-                {
-                    throw new InvalidOperationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.AnimationLoadErrorFormat, ex.Message), ex);
-                }
-            }
-
             _cancellationPending = false;
-            _dialog = new Interop.ProgressDialog();
-            _dialog.SetTitle(WindowTitle);
-            if( Animation != null )
-                _dialog.SetAnimation(_currentAnimationModuleHandle, (ushort)Animation.ResourceId);
+            _dialog = new Interop.OperationsProgressDialog();
 
-            if( CancellationText.Length > 0 )
-                _dialog.SetCancelMsg(CancellationText, null);
-            _dialog.SetLine(1, Text, UseCompactPathsForText, IntPtr.Zero);
-            _dialog.SetLine(2, Description, UseCompactPathsForDescription, IntPtr.Zero);
+            //if( Animation != null )
+                //_dialog.SetAnimation(_currentAnimationModuleHandle, (ushort)Animation.ResourceId);
 
-            Interop.ProgressDialogFlags flags = Interop.ProgressDialogFlags.Normal;
+            //if( CancellationText.Length > 0 )
+                //_dialog.SetCancelMsg(CancellationText, null);
+
+            OperationsProgressDialogFlags flags = OperationsProgressDialogFlags.Normal;
             if( owner != IntPtr.Zero )
-                flags |= Interop.ProgressDialogFlags.Modal;
+                flags |= OperationsProgressDialogFlags.Modal;
             switch( ProgressBarStyle )
             {
             case ProgressBarStyle.None:
-                flags |= Interop.ProgressDialogFlags.NoProgressBar;
+                flags |= OperationsProgressDialogFlags.NoProgressBar;
                 break;
             case ProgressBarStyle.MarqueeProgressBar:
                 if( NativeMethods.IsWindowsVistaOrLater )
-                    flags |= Interop.ProgressDialogFlags.MarqueeProgress;
+                    flags |= OperationsProgressDialogFlags.MarqueeProgress;
                 else
-                    flags |= Interop.ProgressDialogFlags.NoProgressBar; // Older than Vista doesn't support marquee.
+                    flags |= OperationsProgressDialogFlags.NoProgressBar; // Older than Vista doesn't support marquee.
                 break;
             }
             if( ShowTimeRemaining )
-                flags |= Interop.ProgressDialogFlags.AutoTime;
+                flags |= OperationsProgressDialogFlags.AutoTime;
             if( !ShowCancelButton )
-                flags |= Interop.ProgressDialogFlags.NoCancel;
+                flags |= OperationsProgressDialogFlags.NoCancel;
             if( !MinimizeBox )
-                flags |= Interop.ProgressDialogFlags.NoMinimize;
+                flags |= OperationsProgressDialogFlags.NoMinimize;
 
-            _dialog.StartProgressDialog(owner, null, flags, IntPtr.Zero);
+            _dialog.StartProgressDialog(owner, flags);
             _backgroundWorker.RunWorkerAsync(argument);
         }
 
@@ -658,30 +426,21 @@ namespace Ookii.Dialogs.Wpf
             _dialog.StopProgressDialog();
             Marshal.ReleaseComObject(_dialog);
             _dialog = null;
-            if( _currentAnimationModuleHandle != null )
-            {
-                _currentAnimationModuleHandle.Dispose();
-                _currentAnimationModuleHandle = null;
-            }
-
             OnRunWorkerCompleted(new RunWorkerCompletedEventArgs((!e.Cancelled && e.Error == null) ? e.Result : null, e.Error, e.Cancelled));
         }
 
         private void _backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            _cancellationPending = _dialog.HasUserCancelled();
+            // TODO: GetOperationStatus _cancellationPending = _dialog.HasUserCancelled(); 
             // ReportProgress doesn't allow values outside this range. However, CancellationPending will call
             // BackgroundWorker.ReportProgress directly with a value that is outside this range to update the value of the property.
             if( e.ProgressPercentage >= 0 && e.ProgressPercentage <= 100 )
             {
-                _dialog.SetProgress((uint)e.ProgressPercentage, 100);
+
+                //TODO: Implement create new class _dialog.SetProgress((uint)e.ProgressPercentage, 100);
                 ProgressChangedData data = e.UserState as ProgressChangedData;
                 if( data != null )
                 {
-                    if( data.Text != null )
-                        Text = data.Text;
-                    if( data.Description != null )
-                        Description = data.Description;
                     OnProgressChanged(new ProgressChangedEventArgs(e.ProgressPercentage, data.UserState));
                 }
             }

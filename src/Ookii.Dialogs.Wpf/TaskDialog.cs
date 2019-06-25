@@ -3,9 +3,6 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Interop;
@@ -149,8 +146,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="container">The <see cref="IContainer"/> to add the <see cref="TaskDialog"/> to.</param>
         public TaskDialog(IContainer container)
         {
-            if( container != null )
-                container.Add(this);
+            container?.Add(this);
 
             InitializeComponent();
 
@@ -168,13 +164,7 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// Returns <see langword="true" /> for Windows Vista or later; otherwise <see langword="false" />.
         /// </value>
-        public static bool OSSupportsTaskDialogs
-        {
-            get
-            {
-                return NativeMethods.IsWindowsVistaOrLater;
-            }
-        }
+        public static bool OSSupportsTaskDialogs => NativeMethods.IsWindowsVistaOrLater;
 
         /// <summary>
         /// Gets a list of the buttons on the Task Dialog.
@@ -187,10 +177,7 @@ namespace Ookii.Dialogs.Wpf
         /// in the Windows-defined order, regardless of the order of the buttons in the collection.
         /// </remarks>
         [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Appearance"), Description("A list of the buttons on the Task Dialog.")]
-        public TaskDialogItemCollection<TaskDialogButton> Buttons
-        {
-            get { return _buttons ?? (_buttons = new TaskDialogItemCollection<TaskDialogButton>(this)); }
-        }
+        public TaskDialogItemCollection<TaskDialogButton> Buttons => _buttons ?? (_buttons = new TaskDialogItemCollection<TaskDialogButton>(this));
 
         /// <summary>
         /// Gets a list of the radio buttons on the Task Dialog.
@@ -199,11 +186,8 @@ namespace Ookii.Dialogs.Wpf
         /// A list of the radio buttons on the Task Dialog.
         /// </value>
         [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Appearance"), Description("A list of the radio buttons on the Task Dialog.")]
-        public TaskDialogItemCollection<TaskDialogRadioButton> RadioButtons
-        {
-            get { return _radioButtons ?? (_radioButtons = new TaskDialogItemCollection<TaskDialogRadioButton>(this)); }
-        }
-	
+        public TaskDialogItemCollection<TaskDialogRadioButton> RadioButtons => _radioButtons ?? (_radioButtons = new TaskDialogItemCollection<TaskDialogRadioButton>(this));
+
 
         /// <summary>
         /// Gets or sets the window title of the task dialog.
@@ -214,10 +198,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The window title of the task dialog."), DefaultValue("")]
         public string WindowTitle
         {
-            get
-            {
-                return _config.pszWindowTitle ?? string.Empty;
-            }
+            get => _config.pszWindowTitle ?? string.Empty;
             set
             {
                 _config.pszWindowTitle = string.IsNullOrEmpty(value) ? null : value;
@@ -238,7 +219,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The dialog's main instruction."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
         public string MainInstruction
         {
-            get { return _config.pszMainInstruction ?? string.Empty; }
+            get => _config.pszMainInstruction ?? string.Empty;
             set 
             { 
                 _config.pszMainInstruction = string.IsNullOrEmpty(value) ? null : value;
@@ -255,7 +236,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The dialog's primary content."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
         public string Content
         {
-            get { return _config.pszContent ?? string.Empty; }
+            get => _config.pszContent ?? string.Empty;
             set 
             { 
                 _config.pszContent = string.IsNullOrEmpty(value) ? null : value;
@@ -285,7 +266,7 @@ namespace Ookii.Dialogs.Wpf
                 }
                 return _windowIcon; 
             }
-            set { _windowIcon = value; }
+            set => _windowIcon = value;
         }
 	
 
@@ -303,7 +284,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The icon to display in the task dialog."), DefaultValue(TaskDialogIcon.Custom)]
         public TaskDialogIcon MainIcon
         {
-            get { return _mainIcon; }
+            get => _mainIcon;
             set 
             {
                 if( _mainIcon != value )
@@ -327,7 +308,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("A custom icon to display in the dialog."), DefaultValue(null)]
         public System.Drawing.Icon CustomMainIcon
         {
-            get { return _customMainIcon; }
+            get => _customMainIcon;
             set 
             {
                 if( _customMainIcon != value )
@@ -357,7 +338,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The icon to display in the footer area of the task dialog."), DefaultValue(TaskDialogIcon.Custom)]
         public TaskDialogIcon FooterIcon
         {
-            get { return _footerIcon; }
+            get => _footerIcon;
             set 
             {
                 if( _footerIcon != value )
@@ -386,7 +367,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("A custom icon to display in the footer area of the task dialog."), DefaultValue(null)]
         public System.Drawing.Icon CustomFooterIcon
         {
-            get { return _customFooterIcon; }
+            get => _customFooterIcon;
             set 
             {
                 if( _customFooterIcon != value )
@@ -419,12 +400,10 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates whether custom buttons should be displayed as normal buttons or command links."), DefaultValue(TaskDialogButtonStyle.Standard)]
         public TaskDialogButtonStyle ButtonStyle
         {
-            get
-            {
-                return GetFlag(NativeMethods.TaskDialogFlags.UseCommandLinksNoIcon) ? TaskDialogButtonStyle.CommandLinksNoIcon :
-                    GetFlag(NativeMethods.TaskDialogFlags.UseCommandLinks) ? TaskDialogButtonStyle.CommandLinks :
-                    TaskDialogButtonStyle.Standard;
-            }
+            get =>
+                GetFlag(NativeMethods.TaskDialogFlags.UseCommandLinksNoIcon) ? TaskDialogButtonStyle.CommandLinksNoIcon :
+                GetFlag(NativeMethods.TaskDialogFlags.UseCommandLinks) ? TaskDialogButtonStyle.CommandLinks :
+                TaskDialogButtonStyle.Standard;
             set
             {
                 SetFlag(NativeMethods.TaskDialogFlags.UseCommandLinks, value == TaskDialogButtonStyle.CommandLinks);
@@ -446,7 +425,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The label for the verification checkbox."), DefaultValue("")]
         public string VerificationText
         {
-            get { return _config.pszVerificationText ?? string.Empty; }
+            get => _config.pszVerificationText ?? string.Empty;
             set 
             { 
                 string realValue = string.IsNullOrEmpty(value) ? null : value;
@@ -477,7 +456,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates whether the verification checkbox is checked ot not."), DefaultValue(false)]
         public bool IsVerificationChecked
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.VerificationFlagChecked); }
+            get => GetFlag(NativeMethods.TaskDialogFlags.VerificationFlagChecked);
             set 
             { 
                 if( value != IsVerificationChecked )
@@ -511,7 +490,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("Additional information to be displayed on the dialog."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
         public string ExpandedInformation
         {
-            get { return _config.pszExpandedInformation ?? string.Empty; }
+            get => _config.pszExpandedInformation ?? string.Empty;
             set
             {
                 _config.pszExpandedInformation = string.IsNullOrEmpty(value) ? null : value;
@@ -539,7 +518,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The text to use for the control for collapsing the expandable information."), DefaultValue("")]
         public string ExpandedControlText
         {
-            get { return _config.pszExpandedControlText ?? string.Empty; }
+            get => _config.pszExpandedControlText ?? string.Empty;
             set 
             { 
                 string realValue = string.IsNullOrEmpty(value) ? null : value;
@@ -571,7 +550,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The text to use for the control for expanding the expandable information."), DefaultValue("")]
         public string CollapsedControlText
         {
-            get { return _config.pszCollapsedControlText ?? string.Empty; }
+            get => _config.pszCollapsedControlText ?? string.Empty;
             set
             { 
                 string realValue = string.IsNullOrEmpty(value) ? null : value;
@@ -593,7 +572,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("The text to be used in the footer area of the task dialog."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
         public string Footer
         {
-            get { return _config.pszFooterText ?? string.Empty; }
+            get => _config.pszFooterText ?? string.Empty;
             set 
             { 
                 _config.pszFooterText = string.IsNullOrEmpty(value) ? null : value;
@@ -611,7 +590,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("the width of the task dialog's client area in DLU's. If 0, task dialog will calculate the ideal width."), DefaultValue(0)]
         public int Width
         {
-            get { return (int)_config.cxWidth; }
+            get => (int)_config.cxWidth;
             set 
             {
                 if( _config.cxWidth != (uint)value )
@@ -646,7 +625,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates whether hyperlinks are allowed for the Content, ExpandedInformation and Footer properties."), DefaultValue(false)]
         public bool EnableHyperlinks
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.EnableHyperLinks); }
+            get => GetFlag(NativeMethods.TaskDialogFlags.EnableHyperLinks);
             set 
             {
                 if( EnableHyperlinks != value )
@@ -669,7 +648,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates that the dialog should be able to be closed using Alt-F4, Escape and the title bar's close button even if no cancel button is specified."), DefaultValue(false)]
         public bool AllowDialogCancellation
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.AllowDialogCancellation); }
+            get => GetFlag(NativeMethods.TaskDialogFlags.AllowDialogCancellation);
             set 
             {
                 if( AllowDialogCancellation != value )
@@ -692,7 +671,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates that the string specified by the ExpandedInformation property should be displayed at the bottom of the dialog's footer area instead of immediately after the dialog's content."), DefaultValue(false)]
         public bool ExpandFooterArea
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.ExpandFooterArea); }
+            get => GetFlag(NativeMethods.TaskDialogFlags.ExpandFooterArea);
             set 
             {
                 if( ExpandFooterArea != value )
@@ -715,7 +694,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates that the string specified by the ExpandedInformation property should be displayed by default."), DefaultValue(false)]
         public bool ExpandedByDefault
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.ExpandedByDefault); }
+            get => GetFlag(NativeMethods.TaskDialogFlags.ExpandedByDefault);
             set 
             {
                 if( ExpandedByDefault != value )
@@ -740,7 +719,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("Indicates whether the Timer event is raised periodically while the dialog is visible."), DefaultValue(false)]
         public bool RaiseTimerEvent
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.CallbackTimer); }
+            get => GetFlag(NativeMethods.TaskDialogFlags.CallbackTimer);
             set 
             {
                 if( RaiseTimerEvent != value )
@@ -761,7 +740,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Layout"), Description("Indicates whether the dialog is centered in the parent window instead of the screen."), DefaultValue(false)]
         public bool CenterParent
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.PositionRelativeToWindow); }
+            get => GetFlag(NativeMethods.TaskDialogFlags.PositionRelativeToWindow);
             set 
             {
                 if( CenterParent != value )
@@ -782,7 +761,7 @@ namespace Ookii.Dialogs.Wpf
         [Localizable(true), Category("Appearance"), Description("Indicates whether text is displayed right to left."), DefaultValue(false)]
         public bool RightToLeft
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.RtlLayout); }
+            get => GetFlag(NativeMethods.TaskDialogFlags.RtlLayout);
             set 
             {
                 if( RightToLeft != value )
@@ -807,7 +786,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Window Style"), Description("Indicates whether the dialog has a minimize box on its caption bar."), DefaultValue(false)]
         public bool MinimizeBox
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.CanBeMinimized); }
+            get => GetFlag(NativeMethods.TaskDialogFlags.CanBeMinimized);
             set 
             {
                 if( MinimizeBox != value )
@@ -872,7 +851,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("The marquee animation speed of the progress bar in milliseconds."), DefaultValue(100)]
         public int ProgressBarMarqueeAnimationSpeed
         {
-            get { return _progressBarMarqueeAnimationSpeed; }
+            get => _progressBarMarqueeAnimationSpeed;
             set 
             { 
                 _progressBarMarqueeAnimationSpeed = value;
@@ -894,11 +873,11 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("The lower bound of the range of the task dialog's progress bar."), DefaultValue(0)]
         public int ProgressBarMinimum
         {
-            get { return _progressBarMinimimum; }
+            get => _progressBarMinimimum;
             set 
             {
                 if( _progressBarMaximum <= value )
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 _progressBarMinimimum = value;
                 UpdateProgressBarRange();
             }
@@ -918,11 +897,11 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("The upper bound of the range of the task dialog's progress bar."), DefaultValue(100)]
         public int ProgressBarMaximum
         {
-            get { return _progressBarMaximum; }
+            get => _progressBarMaximum;
             set 
             {
                 if( value <= _progressBarMinimimum )
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 _progressBarMaximum = value;
                 UpdateProgressBarRange();
             }
@@ -946,11 +925,11 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("The current value of the task dialog's progress bar."), DefaultValue(0)]
         public int ProgressBarValue
         {
-            get { return _progressBarValue; }
+            get => _progressBarValue;
             set 
             {
                 if( value < ProgressBarMinimum || value > ProgressBarMaximum )
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 _progressBarValue = value;
                 UpdateProgressBarValue();
@@ -971,7 +950,7 @@ namespace Ookii.Dialogs.Wpf
         [Category("Behavior"), Description("The state of the task dialog's progress bar."), DefaultValue(ProgressBarState.Normal)]
         public ProgressBarState ProgressBarState
         {
-            get { return _progressBarState; }
+            get => _progressBarState;
             set 
             {
                 _progressBarState = value;
@@ -991,8 +970,8 @@ namespace Ookii.Dialogs.Wpf
         [Category("Data"), Description("User-defined data about the component."), DefaultValue(null)]
         public object Tag
         {
-            get { return _tag; }
-            set { _tag = value; }
+            get => _tag;
+            set => _tag = value;
         }
 	
 
@@ -1105,8 +1084,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="e">The <see cref="HyperlinkClickedEventArgs"/> containing the data for the event.</param>
         protected virtual void OnHyperlinkClicked(HyperlinkClickedEventArgs e)
         {
-            if( HyperlinkClicked != null )
-                HyperlinkClicked(this, e);
+            HyperlinkClicked?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1115,8 +1093,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="e">The <see cref="TaskDialogItemClickedEventArgs"/> containing the data for the event.</param>
         protected virtual void OnButtonClicked(TaskDialogItemClickedEventArgs e)
         {
-            if( ButtonClicked != null )
-                ButtonClicked(this, e);
+            ButtonClicked?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1125,8 +1102,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="e">The <see cref="TaskDialogItemClickedEventArgs"/> containing the data for the event.</param>
         protected virtual void OnRadioButtonClicked(TaskDialogItemClickedEventArgs e)
         {
-            if( RadioButtonClicked != null )
-                RadioButtonClicked(this, e);
+            RadioButtonClicked?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1135,8 +1111,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
         protected virtual void OnVerificationClicked(EventArgs e)
         {
-            if( VerificationClicked != null )
-                VerificationClicked(this, e);
+            VerificationClicked?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1145,8 +1120,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
         protected virtual void OnCreated(EventArgs e)
         {
-            if( Created != null )
-                Created(this, e);
+            Created?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1155,8 +1129,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="e">The <see cref="TimerEventArgs"/> containing the data for the event.</param>
         protected virtual void OnTimer(TimerEventArgs e)
         {
-            if( Timer != null )
-                Timer(this, e);
+            Timer?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1165,8 +1138,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
         protected virtual void OnDestroyed(EventArgs e)
         {
-            if( Destroyed != null )
-                Destroyed(this, e);
+            Destroyed?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1175,8 +1147,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="e">The <see cref="ExpandButtonClickedEventArgs"/> containing the data for the event.</param>
         protected virtual void OnExpandButtonClicked(ExpandButtonClickedEventArgs e)
         {
-            if( ExpandButtonClicked != null )
-                ExpandButtonClicked(this, e);
+            ExpandButtonClicked?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1185,8 +1156,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
         protected virtual void OnHelpRequested(EventArgs e)
         {
-            if( HelpRequested != null )
-                HelpRequested(this, e);
+            HelpRequested?.Invoke(this, e);
         }
 
         #endregion
@@ -1312,14 +1282,7 @@ namespace Ookii.Dialogs.Wpf
             }
         }
 
-        private bool IsDialogRunning
-        {
-            get 
-            { 
-                // Intentially not using the Handle property, since the cross-thread call check should not be performed here.
-                return _handle != IntPtr.Zero; 
-            }
-        }
+        private bool IsDialogRunning => _handle != IntPtr.Zero;
 
         private void SetElementText(NativeMethods.TaskDialogElements element, string text)
         {

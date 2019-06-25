@@ -1,8 +1,6 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -33,8 +31,8 @@ namespace Ookii.Dialogs.Wpf
         /// </value>
         public bool ResetTickCount
         {
-            get { return _resetTickCount; }
-            set { _resetTickCount = value; }
+            get => _resetTickCount;
+            set => _resetTickCount = value;
         }
 
         /// <summary>
@@ -44,10 +42,6 @@ namespace Ookii.Dialogs.Wpf
         /// The number of milliseconds that has elapsed since the dialog was created or since the last time the event handler returned
         /// with the <see cref="ResetTickCount"/> property set to <see langword="true" />.
         /// </value>
-        public int TickCount
-        {
-            get { return _tickCount; }
-        }
-	
+        public int TickCount => _tickCount;
     }
 }

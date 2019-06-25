@@ -1,8 +1,6 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using System.ComponentModel;
 
 namespace Ookii.Dialogs.Wpf
@@ -30,10 +28,6 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// The <see cref="TaskDialogItem"/> that was clicked.
         /// </value>
-        public TaskDialogItem Item
-        {
-            get { return _item; }
-        }
-	
+        public TaskDialogItem Item => _item;
     }
 }

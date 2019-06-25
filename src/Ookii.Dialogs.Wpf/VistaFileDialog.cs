@@ -1,10 +1,7 @@
 // Copyright (c) Sven Groot (Ookii.org) 2006
 // See LICENSE for details
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Win32;
-using System.Collections;
 using System.IO;
 using System.ComponentModel;
 using Ookii.Dialogs.Wpf.Interop;
@@ -54,7 +51,7 @@ namespace Ookii.Dialogs.Wpf
         /// Event raised when the user clicks on the Open or Save button on a file dialog box.
         /// </summary>
         [Description("Event raised when the user clicks on the Open or Save button on a file dialog box."), Category("Action")]
-        public event System.ComponentModel.CancelEventHandler FileOk;
+        public event CancelEventHandler FileOk;
 
         /// <summary>
         /// Creates a new instance of <see cref="VistaFileDialog" /> class.
@@ -82,13 +79,7 @@ namespace Ookii.Dialogs.Wpf
         /// </para>
         /// </remarks>
         [Browsable(false)]
-        public static bool IsVistaFileDialogSupported
-        {
-            get
-            {
-                return NativeMethods.IsWindowsVistaOrLater;
-            }
-        }
+        public static bool IsVistaFileDialogSupported => NativeMethods.IsWindowsVistaOrLater;
 
         /// <summary>
         /// Gets or sets a value indicating whether the dialog box automatically adds an extension to a file name 
@@ -461,17 +452,14 @@ namespace Ookii.Dialogs.Wpf
         [Browsable(false)]
         protected FileDialog DownlevelDialog
         {
-            get
-            {
-                return _downlevelDialog;
-            }
+            get => _downlevelDialog;
             set
             {
                 _downlevelDialog = value;
                 if( value != null )
                 {
                     //value.HelpRequest += new EventHandler(DownlevelDialog_HelpRequest);
-                    value.FileOk += new System.ComponentModel.CancelEventHandler(DownlevelDialog_FileOk);
+                    value.FileOk += new CancelEventHandler(DownlevelDialog_FileOk);
                 }
             }
         }
@@ -563,12 +551,12 @@ namespace Ookii.Dialogs.Wpf
             return (_options & option) != 0;
         }
 
-        internal virtual void GetResult(Ookii.Dialogs.Wpf.Interop.IFileDialog dialog)
+        internal virtual void GetResult(IFileDialog dialog)
         {
             if( !GetOption(NativeMethods.FOS.FOS_ALLOWMULTISELECT) )
             {
                 _fileNames = new string[1];
-                Ookii.Dialogs.Wpf.Interop.IShellItem result;
+                IShellItem result;
                 dialog.GetResult(out result);
                 result.GetDisplayName(NativeMethods.SIGDN.SIGDN_FILESYSPATH, out _fileNames[0]);
             }
@@ -578,11 +566,10 @@ namespace Ookii.Dialogs.Wpf
         /// Raises the <see cref="FileOk" /> event.
         /// </summary>
         /// <param name="e">A <see cref="System.ComponentModel.CancelEventArgs" /> that contains the event data.</param>
-        protected virtual void OnFileOk(System.ComponentModel.CancelEventArgs e)
+        protected virtual void OnFileOk(CancelEventArgs e)
         {
-            System.ComponentModel.CancelEventHandler handler = FileOk;
-            if( handler != null )
-                handler(this, e);
+            CancelEventHandler handler = FileOk;
+            handler?.Invoke(this, e);
         }
 
         #endregion
@@ -600,7 +587,7 @@ namespace Ookii.Dialogs.Wpf
             return MessageBox.Show(_owner, text, caption, buttons, icon, defaultResult, options) == MessageBoxResult.Yes;
         }
         
-        internal virtual void SetDialogProperties(Ookii.Dialogs.Wpf.Interop.IFileDialog dialog)
+        internal virtual void SetDialogProperties(IFileDialog dialog)
         {
             uint cookie;
             dialog.Advise(new VistaFileDialogEvents(this), out cookie);
@@ -646,7 +633,7 @@ namespace Ookii.Dialogs.Wpf
             // Initial directory
             if( !string.IsNullOrEmpty(_initialDirectory) )
             {
-                Ookii.Dialogs.Wpf.Interop.IShellItem item = NativeMethods.CreateItemFromParsingName(_initialDirectory);
+                IShellItem item = NativeMethods.CreateItemFromParsingName(_initialDirectory);
                 dialog.SetDefaultFolder(item);
             }
 
@@ -658,13 +645,13 @@ namespace Ookii.Dialogs.Wpf
             dialog.SetOptions((_options | NativeMethods.FOS.FOS_FORCEFILESYSTEM));
         }
 
-        internal abstract Ookii.Dialogs.Wpf.Interop.IFileDialog CreateFileDialog();
+        internal abstract IFileDialog CreateFileDialog();
 
-        internal bool DoFileOk(Ookii.Dialogs.Wpf.Interop.IFileDialog dialog)
+        internal bool DoFileOk(IFileDialog dialog)
         {
             GetResult(dialog);
 
-            System.ComponentModel.CancelEventArgs e = new System.ComponentModel.CancelEventArgs();
+            CancelEventArgs e = new CancelEventArgs();
             OnFileOk(e);
             return !e.Cancel;
         }
@@ -675,7 +662,7 @@ namespace Ookii.Dialogs.Wpf
 
         private bool RunFileDialog(IntPtr hwndOwner)
         {
-            Ookii.Dialogs.Wpf.Interop.IFileDialog dialog = null;
+            IFileDialog dialog = null;
             try
             {
                 dialog = CreateFileDialog();
@@ -697,7 +684,7 @@ namespace Ookii.Dialogs.Wpf
             }
         }
 
-        private void DownlevelDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        private void DownlevelDialog_FileOk(object sender, CancelEventArgs e)
         {
             OnFileOk(e);
         }

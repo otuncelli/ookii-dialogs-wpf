@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
-
-namespace Ookii.Dialogs.Wpf.Interop
+﻿namespace Ookii.Dialogs.Wpf.Interop
 {
     internal static class IIDGuid
     {
@@ -21,6 +15,7 @@ namespace Ookii.Dialogs.Wpf.Interop
         internal const string IKnownFolderManager = "44BEAAEC-24F4-4E90-B3F0-23D258FBB146";
         internal const string IPropertyStore = "886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99";
         internal const string IProgressDialog = "EBBC7C04-315E-11d2-B62F-006097DF5BD4";
+        internal const string IOperationsProgressDialog = "0C9FB851-E5C9-43EB-A370-F0677B13874C";
     }
 
     internal static class CLSIDGuid

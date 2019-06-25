@@ -1,8 +1,6 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections.ObjectModel;
 
 namespace Ookii.Dialogs.Wpf
@@ -56,7 +54,7 @@ namespace Ookii.Dialogs.Wpf
         protected override void InsertItem(int index, T item)
         {
             if( item == null )
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
 
             if( item.Owner != null )
                 throw new ArgumentException(Properties.Resources.TaskDialogItemHasOwnerError);
@@ -119,7 +117,7 @@ namespace Ookii.Dialogs.Wpf
         protected override void SetItem(int index, T item)
         {
             if( item == null )
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
 
             if( base[index] != item )
             {
