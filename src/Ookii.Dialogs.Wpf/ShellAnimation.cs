@@ -1,9 +1,11 @@
-﻿namespace Ookii.Dialogs.Wpf
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Ookii.Dialogs.Wpf
 {
     /// <summary>
     /// Resource identifiers for default animations from shell32.dll.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum ShellAnimation
     {
         /// <summary>
@@ -45,6 +47,6 @@
         /// <summary>
         /// An animation representing a search using a flashlight animation.
         /// </summary>
-        SearchFlashlight = 150,
+        SearchFlashlight = 150
     }
 }

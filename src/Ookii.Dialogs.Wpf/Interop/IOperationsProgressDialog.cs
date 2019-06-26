@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace Ookii.Dialogs.Wpf.Interop
 {
-    [ComImport,
-     Guid(IIDGuid.IOperationsProgressDialog),
-     CoClass(typeof(ProgressDialogRCW))]
+    [ComImport]
+    [Guid(IIDGuid.IOperationsProgressDialog)]
+    [CoClass(typeof(ProgressDialogRCW))]
     internal interface OperationsProgressDialog : IOperationsProgressDialog
     {
     }
@@ -139,32 +139,32 @@ namespace Ookii.Dialogs.Wpf.Interop
         CopyMoving
     }
 
-    public enum PDOPSTATUS : uint
+    public enum OperationsProgressDialogStatus : uint
     {
         /// <summary>
         /// Operation is running, no user intervention.
         /// </summary>
-        PDOPS_RUNNING = 1,
+        Running = 1,
 
         /// <summary>
         /// Operation has been paused by the user.
         /// </summary>
-        PDOPS_PAUSED = 2,
+        Paused = 2,
 
         /// <summary>
         /// Operation has been canceled by the user - now go undo.
         /// </summary>
-        PDOPS_CANCELLED = 3,
+        Cancelled = 3,
 
         /// <summary>
         /// Operation has been stopped by the user - terminate completely.
         /// </summary>
-        PDOPS_STOPPED = 4,
+        Stopped = 4,
 
         /// <summary>
         /// Operation has gone as far as it can go without throwing error dialogs.
         /// </summary>
-        PDOPS_ERRORS = 5
+        Errors = 5
     }
 
     [ComImport]
@@ -173,37 +173,37 @@ namespace Ookii.Dialogs.Wpf.Interop
     internal interface IOperationsProgressDialog
     {
         [PreserveSig]
-        void StartProgressDialog(IntPtr hwndParent, OperationsProgressDialogFlags flags);
+        int StartProgressDialog(IntPtr hwndOwner, OperationsProgressDialogFlags flags);
 
         [PreserveSig]
-        void StopProgressDialog();
+        int StopProgressDialog();
 
         [PreserveSig]
-        void SetOperation(OperationsProgressDialogAction action);
+        int SetOperation(OperationsProgressDialogAction action);
 
         [PreserveSig]
-        void SetMode(OperationsProgressDialogMode mode);
+        int SetMode(OperationsProgressDialogMode mode);
 
         [PreserveSig]
-        void UpdateProgress(ulong ullPointsCurrent, ulong ullPointsTotal, ulong ullSizeCurrent, ulong ullSizeTotal,
+        int UpdateProgress(ulong ullPointsCurrent, ulong ullPointsTotal, ulong ullSizeCurrent, ulong ullSizeTotal,
             ulong ullItemsCurrent, ulong ullItemsTotal);
 
         [PreserveSig]
-        void UpdateLocations(IShellItem psiSource, IShellItem psiTarget, IShellItem psiItem);
+        int UpdateLocations(IShellItem psiSource, IShellItem psiTarget, IShellItem psiItem);
 
         [PreserveSig]
-        void ResetTimer();
+        int ResetTimer();
 
         [PreserveSig]
-        void PauseTimer();
+        int PauseTimer();
 
         [PreserveSig]
-        void ResumeTimer();
+        int ResumeTimer();
 
         [PreserveSig]
-        void GetMilliseconds(ulong pullElapsed, ulong pullRemaining);
+        int GetMilliseconds(out ulong pullElapsed, out ulong pullRemaining);
 
         [PreserveSig]
-        PDOPSTATUS GetOperationStatus();
+        int GetOperationStatus(out OperationsProgressDialogStatus status);
     }
 }

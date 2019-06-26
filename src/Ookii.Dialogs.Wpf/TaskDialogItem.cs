@@ -1,8 +1,10 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
+
 using System;
-using System.ComponentModel;
 using System.Collections;
+using System.ComponentModel;
+using Ookii.Dialogs.Wpf.Properties;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -10,7 +12,10 @@ namespace Ookii.Dialogs.Wpf
     /// Represents a button or radio button on a task dialog.
     /// </summary>
     /// <threadsafety instance="false" static="true" />
-    [ToolboxItem(false), DesignTimeVisible(false), DefaultProperty("Text"), DefaultEvent("Click")]
+    [ToolboxItem(false)]
+    [DesignTimeVisible(false)]
+    [DefaultProperty("Text")]
+    [DefaultEvent("Click")]
     public abstract partial class TaskDialogItem : Component
     {
         private TaskDialog _owner;
@@ -80,7 +85,10 @@ namespace Ookii.Dialogs.Wpf
         ///   than <see cref="ButtonType.Custom"/>.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The text of the item."), DefaultValue("")]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description("The text of the item.")]
+        [DefaultValue("")]
         public string Text
         {
             get => _text ?? string.Empty;
@@ -101,7 +109,9 @@ namespace Ookii.Dialogs.Wpf
         /// If a button or radio button is not enabled, it will be grayed out and cannot be
         /// selected or clicked.
         /// </remarks>
-        [Category("Behavior"), Description("Indicates whether the item is enabled."), DefaultValue(true)]
+        [Category("Behavior")]
+        [Description("Indicates whether the item is enabled.")]
+        [DefaultValue(true)]
         public bool Enabled
         {
             get => _enabled;
@@ -130,7 +140,9 @@ namespace Ookii.Dialogs.Wpf
         ///   to the next available id value.
         /// </para>
         /// </remarks>
-        [Category("Data"), Description("The id of the item."), DefaultValue(0)]
+        [Category("Data")]
+        [Description("The id of the item.")]
+        [DefaultValue(0)]
         internal virtual int Id
         {
             get => _id;
@@ -157,7 +169,7 @@ namespace Ookii.Dialogs.Wpf
         public void Click()
         {
             if( Owner == null )
-                throw new InvalidOperationException(Properties.Resources.NoAssociatedTaskDialogError);
+                throw new InvalidOperationException(Resources.NoAssociatedTaskDialogError);
 
             Owner.ClickItem(this);
         }
@@ -227,7 +239,7 @@ namespace Ookii.Dialogs.Wpf
                     foreach( TaskDialogItem item in items )
                     {
                         if( item != this && item != itemToExclude && item.Id == id )
-                            throw new InvalidOperationException(Properties.Resources.DuplicateItemIdError);
+                            throw new InvalidOperationException(Resources.DuplicateItemIdError);
                     }
                 }
             }

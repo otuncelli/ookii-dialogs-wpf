@@ -1,18 +1,22 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
+
 using System;
 using System.ComponentModel.Design;
+using Ookii.Dialogs.Wpf.Properties;
 
 namespace Ookii.Dialogs.Wpf
 {
-    class TaskDialogDesigner : ComponentDesigner
+    internal class TaskDialogDesigner : ComponentDesigner
     {
         public override DesignerVerbCollection Verbs
         {
             get
             {
-                DesignerVerbCollection verbs = new DesignerVerbCollection();
-                verbs.Add(new DesignerVerb(Properties.Resources.Preview, new EventHandler(Preview)));
+                DesignerVerbCollection verbs = new DesignerVerbCollection
+                {
+                    new DesignerVerb(Resources.Preview, Preview)
+                };
                 return verbs;
             }
         }

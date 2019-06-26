@@ -1,12 +1,14 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Ookii.Dialogs.Wpf
 {
     /// <summary>
     /// Represents the type of a task dialog button.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
+    [SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
     public enum ButtonType
     {
         /// <summary>

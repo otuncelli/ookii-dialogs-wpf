@@ -1,5 +1,6 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
+
 using System;
 
 namespace Ookii.Dialogs.Wpf

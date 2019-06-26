@@ -1,10 +1,10 @@
 // Copyright (c) Sven Groot (Ookii.org) 2006
 // See LICENSE for details
 
-using System.IO;
-using System.ComponentModel;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf.Interop;
+using System.ComponentModel;
+using System.IO;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -55,7 +55,9 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// <see langword="true" /> if the dialog box displays a warning if the user specifies a file name that does not exist; otherwise, <see langword="false" />. The default value is <see langword="true" />.
         /// </value>
-        [DefaultValue(true), Description("A value indicating whether the dialog box displays a warning if the user specifies a file name that does not exist.")]
+        [DefaultValue(true)]
+        [Description(
+            "A value indicating whether the dialog box displays a warning if the user specifies a file name that does not exist.")]
         public override bool CheckFileExists
         {
             get => base.CheckFileExists;
@@ -69,7 +71,9 @@ namespace Ookii.Dialogs.Wpf
         /// <see langword="true" /> if the dialog box allows multiple files to be selected together or concurrently; otherwise, <see langword="false" />. 
         /// The default value is <see langword="false" />.
         /// </value>
-        [Description("A value indicating whether the dialog box allows multiple files to be selected."), DefaultValue(false), Category("Behavior")]
+        [Description("A value indicating whether the dialog box allows multiple files to be selected.")]
+        [DefaultValue(false)]
+        [Category("Behavior")]
         public bool Multiselect
         {
             get
@@ -97,7 +101,9 @@ namespace Ookii.Dialogs.Wpf
         /// If the Vista style dialog is used, this property can only be used to determine whether the user chose
         /// Open as read-only on the dialog; setting it in code will have no effect.
         /// </remarks>
-        [Description("A value indicating whether the dialog box contains a read-only check box."), Category("Behavior"), DefaultValue(false)]
+        [Description("A value indicating whether the dialog box contains a read-only check box.")]
+        [Category("Behavior")]
+        [DefaultValue(false)]
         public bool ShowReadOnly
         {
             get
@@ -121,7 +127,9 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// <see langword="true" /> if the read-only check box is selected; otherwise, <see langword="false" />. The default value is <see langword="false" />.
         /// </value>
-        [DefaultValue(false), Description("A value indicating whether the read-only check box is selected."), Category("Behavior")]
+        [DefaultValue(false)]
+        [Description("A value indicating whether the read-only check box is selected.")]
+        [Category("Behavior")]
         public bool ReadOnlyChecked
         {
             get
@@ -166,11 +174,8 @@ namespace Ookii.Dialogs.Wpf
         {
             if( DownlevelDialog != null )
                 return ((OpenFileDialog)DownlevelDialog).OpenFile();
-            else
-            {
-                string fileName = FileName;
-                return new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            }
+            string fileName = FileName;
+            return new FileStream(fileName, FileMode.Open, FileAccess.Read);
         }
 
         #endregion

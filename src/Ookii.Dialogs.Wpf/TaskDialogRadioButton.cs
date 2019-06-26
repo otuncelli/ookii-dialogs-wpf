@@ -1,6 +1,7 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 
+using System.Collections;
 using System.ComponentModel;
 
 namespace Ookii.Dialogs.Wpf
@@ -40,7 +41,9 @@ namespace Ookii.Dialogs.Wpf
         /// Setting this property while the dialog is being displayed has no effect. Instead, use the <see cref="TaskDialogItem.Click"/>
         /// method to check a particular radio button.
         /// </remarks>
-        [Category("Appearance"), Description("Indicates whether the radio button is checked."), DefaultValue(false)]
+        [Category("Appearance")]
+        [Description("Indicates whether the radio button is checked.")]
+        [DefaultValue(false)]
         public bool Checked
         {
             get => _checked;
@@ -65,6 +68,6 @@ namespace Ookii.Dialogs.Wpf
         /// If the <see cref="TaskDialogButton"/> is currently associated with a <see cref="TaskDialog"/>, the
         /// <see cref="TaskDialog.Buttons"/> collection of that <see cref="TaskDialog"/>; otherwise, <see langword="null" />.
         /// </value>
-        protected override System.Collections.IEnumerable ItemCollection => Owner?.RadioButtons;
+        protected override IEnumerable ItemCollection => Owner?.RadioButtons;
     }
 }

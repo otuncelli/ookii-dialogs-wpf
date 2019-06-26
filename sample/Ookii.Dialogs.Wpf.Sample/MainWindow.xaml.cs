@@ -1,7 +1,9 @@
-﻿using System;
-using System.Windows;
+﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
-using System.ComponentModel;
+using System.Windows;
+using Ookii.Dialogs.Wpf.Interop;
 
 namespace Ookii.Dialogs.Wpf.Sample
 {
@@ -10,22 +12,34 @@ namespace Ookii.Dialogs.Wpf.Sample
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ProgressDialog _sampleProgressDialog = new ProgressDialog()
-            {
+        private ProgressDialog _sampleProgressDialog = new ProgressDialog
+        {
                 WindowTitle = "Progress dialog sample",
                 Text = "This is a sample progress dialog...",
                 Description = "Processing...",
-                ShowTimeRemaining = true,
+                ShowTimeRemaining = true
             };
 
-        private OperationsProgressDialog _sampleOperationsProgressDialog = new OperationsProgressDialog();
+        private OperationsProgressDialog _sampleOperationsProgressDialog = new OperationsProgressDialog
+        {
+            NoTime =  true,
+            DontDisplayDestPath = true,
+            DontDisplayLocations = true,
+            DontDisplaySourcePath = true,
+            NoMultiDayEstimates = true,
+            AllowUndo = true,
+            EnablePause = true,
+            MinimizeBox = false,
+            ShowCancelButton = false,
+            ShowTimeRemaining = false
+        };
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _sampleProgressDialog.DoWork += new DoWorkEventHandler(_sampleProgressDialog_DoWork);
-            _sampleOperationsProgressDialog.DoWork += new DoWorkEventHandler(_sampleOperationsProgressDialog_DoWork);
+            _sampleProgressDialog.DoWork += _sampleProgressDialog_DoWork;
+            _sampleOperationsProgressDialog.DoWork += _sampleOperationsProgressDialog_DoWork;
         }
 
 
@@ -73,13 +87,15 @@ namespace Ookii.Dialogs.Wpf.Sample
                     dialog.Footer = "Task Dialogs support footers and can even include <a href=\"http://www.ookii.org\">hyperlinks</a>.";
                     dialog.FooterIcon = TaskDialogIcon.Information;
                     dialog.EnableHyperlinks = true;
+                    dialog.ProgressBarStyle = ProgressBarStyle.ProgressBar;
+                    dialog.ProgressBarValue = 37;
                     TaskDialogButton customButton = new TaskDialogButton("A custom button");
                     TaskDialogButton okButton = new TaskDialogButton(ButtonType.Ok);
                     TaskDialogButton cancelButton = new TaskDialogButton(ButtonType.Cancel);
                     dialog.Buttons.Add(customButton);
                     dialog.Buttons.Add(okButton);
                     dialog.Buttons.Add(cancelButton);
-                    dialog.HyperlinkClicked += new EventHandler<HyperlinkClickedEventArgs>(TaskDialog_HyperLinkClicked);
+                    dialog.HyperlinkClicked += TaskDialog_HyperLinkClicked;
                     TaskDialogButton button = dialog.ShowDialog(this);
                     if( button == customButton )
                         MessageBox.Show(this, "You clicked the custom button", "Task Dialog Sample");
@@ -133,7 +149,10 @@ namespace Ookii.Dialogs.Wpf.Sample
             if (_sampleOperationsProgressDialog.IsBusy)
                 MessageBox.Show(this, "The operations progress dialog is already displayed.", "Operations progress dialog sample");
             else
+            {
                 _sampleOperationsProgressDialog.Show();
+                _sampleOperationsProgressDialog.SetOperation(OperationsProgressDialogAction.None);
+            }
         }
 
         private void ShowCredentialDialog()
@@ -196,7 +215,7 @@ namespace Ookii.Dialogs.Wpf.Sample
 
         private void TaskDialog_HyperLinkClicked(object sender, HyperlinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(e.Href);
+            Process.Start(e.Href);
         }
 
         private void _sampleProgressDialog_DoWork(object sender, DoWorkEventArgs e)
@@ -211,7 +230,7 @@ namespace Ookii.Dialogs.Wpf.Sample
                 // ReportProgress can also modify the main text and description; pass null to leave them unchanged.
                 // If _sampleProgressDialog.ShowTimeRemaining is set to true, the time will automatically be calculated based on
                 // the frequency of the calls to ReportProgress.
-                _sampleProgressDialog.ReportProgress(x, null, string.Format(System.Globalization.CultureInfo.CurrentCulture, "Processing: {0}%", x));
+                _sampleProgressDialog.ReportProgress(x, null, string.Format(CultureInfo.CurrentCulture, "Processing: {0}%", x));
             }
         }
 
@@ -227,9 +246,7 @@ namespace Ookii.Dialogs.Wpf.Sample
                 // ReportProgress can also modify the main text and description; pass null to leave them unchanged.
                 // If _sampleProgressDialog.ShowTimeRemaining is set to true, the time will automatically be calculated based on
                 // the frequency of the calls to ReportProgress.
-                _sampleOperationsProgressDialog.ReportProgress("C:\\", "C:\\", "D:\\", (uint) x, (uint) x,
-                    (uint) x,
-                    (uint) x, (uint) x, (uint) x);
+                _sampleOperationsProgressDialog.UpdateProgress(19, 20, 1000000, 5000000, 500, 25000, null);
             }
         }
     }

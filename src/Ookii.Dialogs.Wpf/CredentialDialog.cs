@@ -1,14 +1,19 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Drawing.Design;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Security.Permissions;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
+using Ookii.Dialogs.Wpf.Properties;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -32,7 +37,9 @@ namespace Ookii.Dialogs.Wpf
     /// </note>
     /// </remarks>
     /// <threadsafety instance="false" static="true" />
-    [DefaultProperty("MainInstruction"), DefaultEvent("UserNameChanged"), Description("Allows access to credential UI for generic credentials.")]
+    [DefaultProperty("MainInstruction")]
+    [DefaultEvent("UserNameChanged")]
+    [Description("Allows access to credential UI for generic credentials.")]
     public partial class CredentialDialog : Component
     {
         private string _confirmTarget;
@@ -48,12 +55,14 @@ namespace Ookii.Dialogs.Wpf
         /// <summary>
         /// Event raised when the <see cref="UserName"/> property changes.
         /// </summary>
-        [Category("Property Changed"), Description("Event raised when the value of the UserName property changes.")]
+        [Category("Property Changed")]
+        [Description("Event raised when the value of the UserName property changes.")]
         public event EventHandler UserNameChanged;
         /// <summary>
         /// Event raised when the <see cref="Password"/> property changes.
         /// </summary>
-        [Category("Property Changed"), Description("Event raised when the value of the Password property changes.")]
+        [Category("Property Changed")]
+        [Description("Event raised when the value of the Password property changes.")]
         public event EventHandler PasswordChanged;
 
         /// <summary>
@@ -104,7 +113,9 @@ namespace Ookii.Dialogs.Wpf
         ///   property must be set to <see langword="true"/>.
         /// </para>
         /// </remarks>
-        [Category("Behavior"), Description("Indicates whether to use the application instance credential cache."), DefaultValue(false)]
+        [Category("Behavior")]
+        [Description("Indicates whether to use the application instance credential cache.")]
+        [DefaultValue(false)]
         public bool UseApplicationInstanceCredentialCache { get; set; }
         
         /// <summary>
@@ -118,7 +129,9 @@ namespace Ookii.Dialogs.Wpf
         /// The value of this property is only valid if the dialog box is displayed with a save checkbox.
         /// Set this property before showing the dialog to determine the initial checked value of the save checkbox.
         /// </remarks>
-        [Category("Appearance"), Description("Indicates whether the \"Save password\" checkbox is checked."), DefaultValue(false)]
+        [Category("Appearance")]
+        [Description("Indicates whether the \"Save password\" checkbox is checked.")]
+        [DefaultValue(false)]
         public bool IsSaveChecked
         {
             get => _isSaveChecked;
@@ -186,7 +199,10 @@ namespace Ookii.Dialogs.Wpf
         /// applications do not conflict, you should prefix the target with an application-specific identifer, e.g. 
         /// "Company_Application_target".
         /// </remarks>
-        [Category("Behavior"), Description("The target for the credentials, typically the server name prefixed by an application-specific identifier."), DefaultValue("")]
+        [Category("Behavior")]
+        [Description(
+            "The target for the credentials, typically the server name prefixed by an application-specific identifier.")]
+        [DefaultValue("")]
         public string Target
         {
             get => _target ?? string.Empty;
@@ -209,7 +225,10 @@ namespace Ookii.Dialogs.Wpf
         ///   in that case.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The title of the credentials dialog."), DefaultValue("")]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description("The title of the credentials dialog.")]
+        [DefaultValue("")]
         public string WindowTitle
         {
             get => _windowTitle ?? string.Empty;
@@ -233,7 +252,10 @@ namespace Ookii.Dialogs.Wpf
         ///   property.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("A brief message that will be displayed in the dialog box."), DefaultValue("")]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description("A brief message that will be displayed in the dialog box.")]
+        [DefaultValue("")]
         public string MainInstruction
         {
             get => _caption ?? string.Empty;
@@ -255,7 +277,11 @@ namespace Ookii.Dialogs.Wpf
         ///   property.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("Additional text to display in the dialog."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description("Additional text to display in the dialog.")]
+        [DefaultValue("")]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string Content
         {
             get => _text ?? string.Empty;
@@ -280,7 +306,11 @@ namespace Ookii.Dialogs.Wpf
         ///   This property has no effect on Windows Vista and newer versions of Windows.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("Indicates how the text of the MainInstruction and Content properties is displayed on Windows XP."), DefaultValue(DownlevelTextMode.MainInstructionAndContent)]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description(
+            "Indicates how the text of the MainInstruction and Content properties is displayed on Windows XP.")]
+        [DefaultValue(DownlevelTextMode.MainInstructionAndContent)]
         public DownlevelTextMode DownlevelTextMode { get; set; }
 
         /// <summary>
@@ -296,7 +326,10 @@ namespace Ookii.Dialogs.Wpf
         /// credentials. When this property is set to <see langword="false" />, the credentials will never be saved, and you should not call
         /// the <see cref="ConfirmCredentials"/> method.
         /// </remarks>
-        [Category("Appearance"), Description("Indicates whether a check box is shown on the dialog that allows the user to choose whether to save the credentials or not."), DefaultValue(false)]
+        [Category("Appearance")]
+        [Description(
+            "Indicates whether a check box is shown on the dialog that allows the user to choose whether to save the credentials or not.")]
+        [DefaultValue(false)]
         public bool ShowSaveCheckBox { get; set; }
 
         /// <summary>
@@ -316,7 +349,10 @@ namespace Ookii.Dialogs.Wpf
         ///   application instance credentials cache the dialog will not be displayed.
         /// </para>
         /// </remarks>
-        [Category("Behavior"), Description("Indicates whether the dialog should be displayed even when saved credentials exist for the specified target."), DefaultValue(false)]
+        [Category("Behavior")]
+        [Description(
+            "Indicates whether the dialog should be displayed even when saved credentials exist for the specified target.")]
+        [DefaultValue(false)]
         public bool ShowUIForSavedCredentials { get; set; }
 
         /// <summary>
@@ -420,7 +456,7 @@ namespace Ookii.Dialogs.Wpf
         public bool ShowDialog(Window owner)
         {
             if( string.IsNullOrEmpty(_target) )
-                throw new InvalidOperationException(Properties.Resources.CredentialEmptyTargetError);
+                throw new InvalidOperationException(Resources.CredentialEmptyTargetError);
 
             UserName = "";
             Password = "";
@@ -471,7 +507,7 @@ namespace Ookii.Dialogs.Wpf
         public void ConfirmCredentials(bool confirm)
         {
             if( _confirmTarget == null || _confirmTarget != Target )
-                throw new InvalidOperationException(Properties.Resources.CredentialPromptNotCalled);
+                throw new InvalidOperationException(Resources.CredentialPromptNotCalled);
 
             _confirmTarget = null;
 
@@ -524,7 +560,7 @@ namespace Ookii.Dialogs.Wpf
             if( target == null )
                 throw new ArgumentNullException(nameof(target));
             if( target.Length == 0 )
-                throw new ArgumentException(Properties.Resources.CredentialEmptyTargetError, nameof(target));
+                throw new ArgumentException(Resources.CredentialEmptyTargetError, nameof(target));
             if( credential == null )
                 throw new ArgumentNullException(nameof(credential));
 
@@ -573,7 +609,7 @@ namespace Ookii.Dialogs.Wpf
             if( target == null )
                 throw new ArgumentNullException(nameof(target));
             if( target.Length == 0 )
-                throw new ArgumentException(Properties.Resources.CredentialEmptyTargetError, nameof(target));
+                throw new ArgumentException(Resources.CredentialEmptyTargetError, nameof(target));
 
             NetworkCredential cred = RetrieveCredentialFromApplicationInstanceCache(target);
             if( cred != null )
@@ -596,13 +632,10 @@ namespace Ookii.Dialogs.Wpf
                 }
                 return cred;
             }
-            else
-            {
-                if( error == (int)NativeMethods.CredUIReturnCodes.ERROR_NOT_FOUND )
-                    return null;
-                else
-                    throw new CredentialException(error);
-            }
+
+            if( error == (int)NativeMethods.CredUIReturnCodes.ERROR_NOT_FOUND )
+                return null;
+            throw new CredentialException(error);
         }
 
         /// <summary>
@@ -623,7 +656,7 @@ namespace Ookii.Dialogs.Wpf
             if( target == null )
                 throw new ArgumentNullException(nameof(target));
             if( target.Length == 0 )
-                throw new ArgumentException(Properties.Resources.CredentialEmptyTargetError, nameof(target));
+                throw new ArgumentException(Resources.CredentialEmptyTargetError, nameof(target));
 
             lock( _applicationInstanceCredentialCache )
             {
@@ -656,7 +689,7 @@ namespace Ookii.Dialogs.Wpf
             if( target == null )
                 throw new ArgumentNullException(nameof(target));
             if( target.Length == 0 )
-                throw new ArgumentException(Properties.Resources.CredentialEmptyTargetError, nameof(target));
+                throw new ArgumentException(Resources.CredentialEmptyTargetError, nameof(target));
 
             bool found;
             lock( _applicationInstanceCredentialCache )
@@ -839,7 +872,7 @@ namespace Ookii.Dialogs.Wpf
 
         private static byte[] EncryptPassword(string password)
         {
-            byte[] protectedData = System.Security.Cryptography.ProtectedData.Protect(Encoding.UTF8.GetBytes(password), null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+            byte[] protectedData = ProtectedData.Protect(Encoding.UTF8.GetBytes(password), null, DataProtectionScope.CurrentUser);
             return protectedData;
         }
 
@@ -847,9 +880,9 @@ namespace Ookii.Dialogs.Wpf
         {
             try
             {
-                return Encoding.UTF8.GetString(System.Security.Cryptography.ProtectedData.Unprotect(encrypted, null, System.Security.Cryptography.DataProtectionScope.CurrentUser));
+                return Encoding.UTF8.GetString(ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser));
             }
-            catch( System.Security.Cryptography.CryptographicException )
+            catch( CryptographicException )
             {
                 return string.Empty;
             }

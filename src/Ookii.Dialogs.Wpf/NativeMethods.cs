@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Text;
-using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.InteropServices;
+using System.Text;
 using Ookii.Dialogs.Wpf.Interop;
+// ReSharper disable InconsistentNaming
 
 namespace Ookii.Dialogs.Wpf
 {
-    static class NativeMethods
+    internal static class NativeMethods
     {
         public const int ErrorFileNotFound = 2;
 
@@ -23,8 +25,8 @@ namespace Ookii.Dialogs.Wpf
             LoadLibraryExFlags dwFlags
             );
 
-        [DllImport("kernel32", SetLastError = true),
-        ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        [DllImport("kernel32", SetLastError = true)]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool FreeLibrary(IntPtr hModule);
 
@@ -50,7 +52,9 @@ namespace Ookii.Dialogs.Wpf
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern int GetCurrentThreadId();
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist"), DllImport("comctl32.dll", PreserveSig = false)]
+        [SuppressMessage("Microsoft.Interoperability",
+            "CA1400:PInvokeEntryPointsShouldExist")]
+        [DllImport("comctl32.dll", PreserveSig = false)]
         public static extern void TaskDialogIndirect([In] ref TASKDIALOGCONFIG pTaskConfig, out int pnButton, out int pnRadioButton, [MarshalAs(UnmanagedType.Bool)] out bool pfVerificationFlagChecked);
 
 
@@ -86,7 +90,7 @@ namespace Ookii.Dialogs.Wpf
             CancelButton = 0x0008, // selected control return value IDCANCEL
             RetryButton = 0x0010, // selected control return value IDRETRY
             CloseButton = 0x0020  // selected control return value IDCLOSE
-        };
+        }
 
         [Flags]
         public enum TaskDialogFlags
@@ -107,7 +111,7 @@ namespace Ookii.Dialogs.Wpf
             RtlLayout = 0x2000,
             NoDefaultRadioButton = 0x4000,
             CanBeMinimized = 0x8000
-        };
+        }
 
         public enum TaskDialogMessages
         {
@@ -144,7 +148,9 @@ namespace Ookii.Dialogs.Wpf
             public string pszButtonText;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable"), StructLayout(LayoutKind.Sequential, Pack = 4)]
+        [SuppressMessage("Microsoft.Design",
+            "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable")]
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public struct TASKDIALOGCONFIG
         {
             public uint cbSize;
@@ -161,7 +167,7 @@ namespace Ookii.Dialogs.Wpf
             public string pszContent;
             public uint cButtons;
             //[MarshalAs(UnmanagedType.LPArray)]
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
+            [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
             public IntPtr pButtons;
             public int nDefaultButton;
             public uint cRadioButtons;
@@ -194,7 +200,9 @@ namespace Ookii.Dialogs.Wpf
 
         [DllImport("Kernel32.dll", SetLastError = true)]
         public extern static ActivationContextSafeHandle CreateActCtx(ref ACTCTX actctx);
-        [DllImport("kernel32.dll"), ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+
+        [DllImport("kernel32.dll")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public extern static void ReleaseActCtx(IntPtr hActCtx);
         [DllImport("Kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -234,7 +242,7 @@ namespace Ookii.Dialogs.Wpf
         internal enum FDAP
         {
             FDAP_BOTTOM = 0x00000000,
-            FDAP_TOP = 0x00000001,
+            FDAP_TOP = 0x00000001
         }
 
         internal enum FDE_SHAREVIOLATION_RESPONSE
@@ -255,7 +263,7 @@ namespace Ookii.Dialogs.Wpf
         {
             SIATTRIBFLAGS_AND = 0x00000001, // if multiple items and the attirbutes together.
             SIATTRIBFLAGS_OR = 0x00000002, // if multiple items or the attributes together.
-            SIATTRIBFLAGS_APPCOMPAT = 0x00000003, // Call GetAttributes directly on the ShellFolder for multiple attributes
+            SIATTRIBFLAGS_APPCOMPAT = 0x00000003 // Call GetAttributes directly on the ShellFolder for multiple attributes
         }
 
         internal enum SIGDN : uint
@@ -354,7 +362,7 @@ namespace Ookii.Dialogs.Wpf
         {
             KFDF_PERSONALIZE = 0x00000001,
             KFDF_LOCAL_REDIRECT_ONLY = 0x00000002,
-            KFDF_ROAMABLE = 0x00000004,
+            KFDF_ROAMABLE = 0x00000004
         }
 
 
@@ -373,13 +381,28 @@ namespace Ookii.Dialogs.Wpf
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
 
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SHSimpleIDListFromPath([MarshalAs(UnmanagedType.LPWStr)] string pszPath);
+
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        public static extern int SHCreateItemFromIDList(IntPtr pidl, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
+
         public static IShellItem CreateItemFromParsingName(string path)
         {
-            object item;
             Guid guid = new Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe"); // IID_IShellItem
-            int hr = SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out item);
+            int hr = SHCreateItemFromParsingName(path, IntPtr.Zero, ref guid, out object item);
             if( hr != 0 )
-                throw new System.ComponentModel.Win32Exception(hr);
+                Marshal.ThrowExceptionForHR(hr);
+            return (IShellItem)item;
+        }
+
+        public static IShellItem CreateVirtualItem(string path)
+        {
+            Guid guid = new Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe"); // IID_IShellItem
+            IntPtr pidl = SHSimpleIDListFromPath(path);
+            int hr = SHCreateItemFromIDList(pidl, ref guid, out object item);
+            if (hr != 0)
+                Marshal.ThrowExceptionForHR(hr);
             return (IShellItem)item;
         }
 
@@ -387,7 +410,7 @@ namespace Ookii.Dialogs.Wpf
 
         #region String Resources
 
-        [Flags()]
+        [Flags]
         public enum FormatMessageFlags
         {
             FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100,
@@ -475,7 +498,7 @@ namespace Ookii.Dialogs.Wpf
             Enterprise = 3
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable")]
+        [SuppressMessage("Microsoft.Design", "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable")]
         internal struct CREDUI_INFO
         {
             public int cbSize;
@@ -497,7 +520,8 @@ namespace Ookii.Dialogs.Wpf
             uint ulUserNameMaxChars,
             StringBuilder pszPassword,
             uint ulPaswordMaxChars,
-            [MarshalAs(UnmanagedType.Bool), In(), Out()] ref bool pfSave,
+            [MarshalAs(UnmanagedType.Bool)] [In] [Out]
+            ref bool pfSave,
             CREDUI_FLAGS dwFlags);
 
         [DllImport("credui.dll", CharSet = CharSet.Unicode)]
@@ -516,7 +540,8 @@ namespace Ookii.Dialogs.Wpf
         [return: MarshalAs(UnmanagedType.Bool)]
         extern static internal bool CredRead(string TargetName, CredTypes Type, int Flags, out IntPtr Credential);
 
-        [DllImport("advapi32.dll"), ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        [DllImport("advapi32.dll")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         extern static internal void CredFree(IntPtr Buffer);
 
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode, EntryPoint = "CredDeleteW", SetLastError = true)]
@@ -540,7 +565,7 @@ namespace Ookii.Dialogs.Wpf
         // This type does not own the IntPtr native resource; when CredRead is used, CredFree must be called on the
         // IntPtr that the struct was marshalled from to release all resources including the CredentialBlob IntPtr,
         // When allocating the struct manually for CredWrite you should also manually deallocate the CredentialBlob.
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable")]
+        [SuppressMessage("Microsoft.Design", "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable")]
         public struct CREDENTIAL
         {
             public int Flags;
@@ -552,7 +577,7 @@ namespace Ookii.Dialogs.Wpf
             public long LastWritten;
             public uint CredentialBlobSize;
             // Since the resource pointed to must be either released manually or by CredFree, SafeHandle is not appropriate here
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
+            [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
             public IntPtr CredentialBlob;
             [MarshalAs(UnmanagedType.U4)]
             public CredPersist Persist;

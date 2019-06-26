@@ -1,10 +1,10 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // See LICENSE for details
 
-using System.IO;
-using System.ComponentModel;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf.Interop;
+using System.ComponentModel;
+using System.IO;
 using System.Windows;
 
 namespace Ookii.Dialogs.Wpf
@@ -34,7 +34,9 @@ namespace Ookii.Dialogs.Wpf
     /// </para>
     /// </remarks>
     /// <threadsafety instance="false" static="true" />
-    [Designer("System.Windows.Forms.Design.SaveFileDialogDesigner, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"), Description("Prompts the user to open a file.")]
+    [Designer(
+        "System.Windows.Forms.Design.SaveFileDialogDesigner, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+    [Description("Prompts the user to open a file.")]
     public sealed class VistaSaveFileDialog : VistaFileDialog
     {
         /// <summary>
@@ -57,7 +59,10 @@ namespace Ookii.Dialogs.Wpf
         /// <see langword="false" /> if the dialog box automatically creates the new file without prompting the user for permission. The default 
         /// value is <see langword="false" />.
         /// </value>
-        [DefaultValue(false), Category("Behavior"), Description("A value indicating whether the dialog box prompts the user for permission to create a file if the user specifies a file that does not exist.")]
+        [DefaultValue(false)]
+        [Category("Behavior")]
+        [Description(
+            "A value indicating whether the dialog box prompts the user for permission to create a file if the user specifies a file that does not exist.")]
         public bool CreatePrompt
         {
             get
@@ -84,7 +89,10 @@ namespace Ookii.Dialogs.Wpf
         /// name that already exists; <see langword="false" /> if the dialog box automatically overwrites the existing file without 
         /// prompting the user for permission. The default value is <see langword="true" />.
         /// </value>
-        [Category("Behavior"), DefaultValue(true), Description("A value indicating whether the Save As dialog box displays a warning if the user specifies a file name that already exists.")]
+        [Category("Behavior")]
+        [DefaultValue(true)]
+        [Description(
+            "A value indicating whether the Save As dialog box displays a warning if the user specifies a file name that already exists.")]
         public bool OverwritePrompt
         {
             get
@@ -127,11 +135,8 @@ namespace Ookii.Dialogs.Wpf
         {
             if( DownlevelDialog != null )
                 return ((SaveFileDialog)DownlevelDialog).OpenFile();
-            else
-            {
-                string fileName = FileName;
-                return new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite);
-            }
+            string fileName = FileName;
+            return new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite);
         }
 
         #endregion

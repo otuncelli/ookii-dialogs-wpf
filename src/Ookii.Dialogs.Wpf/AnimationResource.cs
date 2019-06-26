@@ -1,5 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
+using Ookii.Dialogs.Wpf.Properties;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -17,10 +21,7 @@ namespace Ookii.Dialogs.Wpf
         /// <exception cref="ArgumentNullException"><paramref name="resourceFile"/> is <see langword="null"/>.</exception>
         public AnimationResource(string resourceFile, int resourceId)
         {
-            if( resourceFile == null )
-                throw new ArgumentNullException(nameof(resourceFile));
-
-            ResourceFile = resourceFile;
+            ResourceFile = resourceFile ?? throw new ArgumentNullException(nameof(resourceFile));
             ResourceId = resourceId;
         }
 
@@ -60,11 +61,10 @@ namespace Ookii.Dialogs.Wpf
             SafeModuleHandle handle = NativeMethods.LoadLibraryEx(ResourceFile, IntPtr.Zero, NativeMethods.LoadLibraryExFlags.LoadLibraryAsDatafile);
             if( handle.IsInvalid )
             {
-                int error = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                int error = Marshal.GetLastWin32Error();
                 if( error == NativeMethods.ErrorFileNotFound )
-                    throw new FileNotFoundException(string.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.FileNotFoundFormat, ResourceFile));
-                else
-                    throw new System.ComponentModel.Win32Exception(error);
+                    throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, Resources.FileNotFoundFormat, ResourceFile));
+                throw new Win32Exception(error);
             }
 
             return handle;

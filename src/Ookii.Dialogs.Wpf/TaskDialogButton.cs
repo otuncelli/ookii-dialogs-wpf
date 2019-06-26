@@ -1,8 +1,12 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
+
 using System;
+using System.Collections;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing.Design;
+using Ookii.Dialogs.Wpf.Properties;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -59,7 +63,9 @@ namespace Ookii.Dialogs.Wpf
         /// One of the <see cref="Ookii.Dialogs.Wpf.ButtonType"/> values that indicates the type of the button. The default value
         /// is <see cref="Ookii.Dialogs.Wpf.ButtonType.Custom"/>.
         /// </value>
-        [Category("Appearance"), Description("The type of the button."), DefaultValue(ButtonType.Custom)]
+        [Category("Appearance")]
+        [Description("The type of the button.")]
+        [DefaultValue(ButtonType.Custom)]
         public ButtonType ButtonType
         {
             get => _type;
@@ -97,7 +103,11 @@ namespace Ookii.Dialogs.Wpf
         ///   otherwise, it is ignored.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The text of the note associated with a command link button."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description("The text of the note associated with a command link button.")]
+        [DefaultValue("")]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string CommandLinkNote
         {
             get => _commandLinkNote ?? string.Empty;
@@ -117,7 +127,9 @@ namespace Ookii.Dialogs.Wpf
         /// <remarks>
         /// If no button has this property set to <see langword="true" />, the first button on the dialog will be the default button.
         /// </remarks>
-        [Category("Behavior"), Description("Indicates if the button is the default button on the dialog."), DefaultValue(false)]
+        [Category("Behavior")]
+        [Description("Indicates if the button is the default button on the dialog.")]
+        [DefaultValue(false)]
         public bool Default
         {
             get => _default;
@@ -148,7 +160,10 @@ namespace Ookii.Dialogs.Wpf
         /// Elevation is not performed by the task dialog; the code implementing the operation that results from
         /// the button being clicked is responsible for performing elevation if required.
         /// </remarks>
-        [Category("Behavior"), Description("Indicates whether the Task Dialog button or command link should have a User Account Control (UAC) shield icon (in other words, whether the action invoked by the button requires elevation)."), DefaultValue(false)] 
+        [Category("Behavior")]
+        [Description(
+            "Indicates whether the Task Dialog button or command link should have a User Account Control (UAC) shield icon (in other words, whether the action invoked by the button requires elevation).")]
+        [DefaultValue(false)]
         public bool ElevationRequired
         {
             get => _elevationRequired;
@@ -168,7 +183,7 @@ namespace Ookii.Dialogs.Wpf
                 if( base.Id != value )
                 {
                     if( _type != ButtonType.Custom )
-                        throw new InvalidOperationException(Properties.Resources.NonCustomTaskDialogButtonIdError);
+                        throw new InvalidOperationException(Resources.NonCustomTaskDialogButtonIdError);
                     base.Id = value;
                 }
             }
@@ -217,7 +232,7 @@ namespace Ookii.Dialogs.Wpf
         /// If the <see cref="TaskDialogButton"/> is currently associated with a <see cref="TaskDialog"/>, the
         /// <see cref="TaskDialog.Buttons"/> collection of that <see cref="TaskDialog"/>; otherwise, <see langword="null" />.
         /// </value>
-        protected override System.Collections.IEnumerable ItemCollection => Owner?.Buttons;
+        protected override IEnumerable ItemCollection => Owner?.Buttons;
 
         private void CheckDuplicateButton(ButtonType type, TaskDialogItem itemToExclude)
         {
@@ -226,7 +241,7 @@ namespace Ookii.Dialogs.Wpf
                 foreach( TaskDialogButton button in Owner.Buttons )
                 {
                     if( button != this && button != itemToExclude && button.ButtonType == type )
-                        throw new InvalidOperationException(Properties.Resources.DuplicateButtonTypeError);
+                        throw new InvalidOperationException(Resources.DuplicateButtonTypeError);
                 }
             }
         }

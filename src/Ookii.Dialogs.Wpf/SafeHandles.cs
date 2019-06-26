@@ -1,15 +1,16 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
-using Microsoft.Win32.SafeHandles;
-using System.Security.Permissions;
+
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using Microsoft.Win32.SafeHandles;
 
 namespace Ookii.Dialogs.Wpf
 {
     [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-    class SafeModuleHandle : SafeHandle
+    internal class SafeModuleHandle : SafeHandle
     {
         public SafeModuleHandle()
             : base(IntPtr.Zero, true)
@@ -26,7 +27,7 @@ namespace Ookii.Dialogs.Wpf
     }
 
     [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-    class ActivationContextSafeHandle : SafeHandleZeroOrMinusOneIsInvalid
+    internal class ActivationContextSafeHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         public ActivationContextSafeHandle()
             : base(true)

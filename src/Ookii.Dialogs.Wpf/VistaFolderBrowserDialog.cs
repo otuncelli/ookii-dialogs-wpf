@@ -1,13 +1,16 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
-using System;
-using System.Text;
-using System.ComponentModel;
-using System.IO;
+
 using Ookii.Dialogs.Wpf.Interop;
-using System.Windows.Interop;
-using System.Windows;
+using Ookii.Dialogs.Wpf.Properties;
+using System;
+using System.ComponentModel;
+using System.Drawing.Design;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows;
+using System.Windows.Interop;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -20,7 +23,11 @@ namespace Ookii.Dialogs.Wpf
     /// in both Vista and older Windows versions is not recommended.
     /// </remarks>
     /// <threadsafety instance="false" static="true" />
-    [DefaultEvent("HelpRequest"), Designer("System.Windows.Forms.Design.FolderBrowserDialogDesigner, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"), DefaultProperty("SelectedPath"), Description("Prompts the user to select a folder.")]
+    [DefaultEvent("HelpRequest")]
+    [Designer(
+        "System.Windows.Forms.Design.FolderBrowserDialogDesigner, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+    [DefaultProperty("SelectedPath")]
+    [Description("Prompts the user to select a folder.")]
     public sealed class VistaFolderBrowserDialog
     {
         private string _description;
@@ -52,7 +59,12 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// The description to display. The default is an empty string ("").
         /// </value>
-        [Category("Folder Browsing"), DefaultValue(""), Localizable(true), Browsable(true), Description("The descriptive text displayed above the tree view control in the dialog box, or below the list view control in the Vista style dialog.")]
+        [Category("Folder Browsing")]
+        [DefaultValue("")]
+        [Localizable(true)]
+        [Browsable(true)]
+        [Description(
+            "The descriptive text displayed above the tree view control in the dialog box, or below the list view control in the Vista style dialog.")]
         public string Description
         {
             get => _description ?? string.Empty;
@@ -67,7 +79,12 @@ namespace Ookii.Dialogs.Wpf
         /// One of the <see cref="System.Environment.SpecialFolder" /> values. The default is Desktop.
         /// </value>
         /// <exception cref="System.ComponentModel.InvalidEnumArgumentException">The value assigned is not one of the <see cref="System.Environment.SpecialFolder" /> values.</exception>
-        [Localizable(false), Description("The root folder where the browsing starts from. This property has no effect if the Vista style dialog is used."), Category("Folder Browsing"), Browsable(true), DefaultValue(typeof(Environment.SpecialFolder), "Desktop")]
+        [Localizable(false)]
+        [Description(
+            "The root folder where the browsing starts from. This property has no effect if the Vista style dialog is used.")]
+        [Category("Folder Browsing")]
+        [Browsable(true)]
+        [DefaultValue(typeof(Environment.SpecialFolder), "Desktop")]
         public Environment.SpecialFolder RootFolder { get; set; }
 	
         /// <summary>
@@ -76,7 +93,14 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// The path of the folder first selected in the dialog box or the last folder selected by the user. The default is an empty string ("").
         /// </value>
-        [Browsable(true), Editor("System.Windows.Forms.Design.SelectedPathEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(System.Drawing.Design.UITypeEditor)), Description("The path selected by the user."), DefaultValue(""), Localizable(true), Category("Folder Browsing")]
+        [Browsable(true)]
+        [Editor(
+            "System.Windows.Forms.Design.SelectedPathEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+            typeof(UITypeEditor))]
+        [Description("The path selected by the user.")]
+        [DefaultValue("")]
+        [Localizable(true)]
+        [Category("Folder Browsing")]
         public string SelectedPath
         {
             get => _selectedPath ?? string.Empty;
@@ -90,7 +114,12 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// <see langword="true" /> if the New Folder button is shown in the dialog box; otherwise, <see langword="false" />. The default is <see langword="true" />.
         /// </value>
-        [Browsable(true), Localizable(false), Description("A value indicating whether the New Folder button appears in the folder browser dialog box. This property has no effect if the Vista style dialog is used; in that case, the New Folder button is always shown."), DefaultValue(true), Category("Folder Browsing")]
+        [Browsable(true)]
+        [Localizable(false)]
+        [Description(
+            "A value indicating whether the New Folder button appears in the folder browser dialog box. This property has no effect if the Vista style dialog is used; in that case, the New Folder button is always shown.")]
+        [DefaultValue(true)]
+        [Category("Folder Browsing")]
         public bool ShowNewFolderButton { get; set; }	
 
         /// <summary>
@@ -99,7 +128,10 @@ namespace Ookii.Dialogs.Wpf
         /// </summary>
         /// <value><see langword="true" /> to indicate that the value of the <see cref="Description" /> property is used as dialog title; <see langword="false" />
         /// to indicate the value is added as additional text to the dialog. The default is <see langword="false" />.</value>
-        [Category("Folder Browsing"), DefaultValue(false), Description("A value that indicates whether to use the value of the Description property as the dialog title for Vista style dialogs. This property has no effect on old style dialogs.")]
+        [Category("Folder Browsing")]
+        [DefaultValue(false)]
+        [Description(
+            "A value that indicates whether to use the value of the Description property as the dialog title for Vista style dialogs. This property has no effect on old style dialogs.")]
         public bool UseDescriptionForTitle { get; set; }
 
         #endregion
@@ -135,7 +167,7 @@ namespace Ookii.Dialogs.Wpf
         public bool? ShowDialog(Window owner)
         {
             IntPtr ownerHandle = owner == null ? NativeMethods.GetActiveWindow() : new WindowInteropHelper(owner).Handle;
-            return new bool?(IsVistaFolderDialogSupported ? RunDialog(ownerHandle) : RunDialogDownlevel(ownerHandle));
+            return IsVistaFolderDialogSupported ? RunDialog(ownerHandle) : RunDialogDownlevel(ownerHandle);
         }
 
         #endregion
@@ -175,14 +207,14 @@ namespace Ookii.Dialogs.Wpf
             {
                 if( NativeMethods.SHGetSpecialFolderLocation(owner, 0, ref rootItemIdList) != 0 )
                 {
-                    throw new InvalidOperationException(Properties.Resources.FolderBrowserDialogNoRootFolder);
+                    throw new InvalidOperationException(Resources.FolderBrowserDialogNoRootFolder);
                 }
             }
             try
             {
                 NativeMethods.BROWSEINFO info = new NativeMethods.BROWSEINFO();
                 info.hwndOwner = owner;
-                info.lpfn = new NativeMethods.BrowseCallbackProc(BrowseCallbackProc);
+                info.lpfn = BrowseCallbackProc;
                 info.lpszTitle = Description;
                 info.pidlRoot = rootItemIdList;
                 info.pszDisplayName = new string('\0', 260);

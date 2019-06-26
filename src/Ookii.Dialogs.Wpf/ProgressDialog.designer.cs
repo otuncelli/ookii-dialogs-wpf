@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace Ookii.Dialogs.Wpf
 {
     partial class ProgressDialog
@@ -5,7 +7,7 @@ namespace Ookii.Dialogs.Wpf
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -54,7 +56,7 @@ namespace Ookii.Dialogs.Wpf
 
         #endregion
 
-        private System.ComponentModel.BackgroundWorker _backgroundWorker;
+        private BackgroundWorker _backgroundWorker;
 
     }
 }

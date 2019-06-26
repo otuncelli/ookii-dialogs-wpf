@@ -1,10 +1,15 @@
 // Copyright (c) Sven Groot (Ookii.org) 2006
 // See LICENSE for details
-using System;
+
 using Microsoft.Win32;
-using System.IO;
-using System.ComponentModel;
 using Ookii.Dialogs.Wpf.Interop;
+using Ookii.Dialogs.Wpf.Properties;
+using System;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -31,7 +36,8 @@ namespace Ookii.Dialogs.Wpf
     /// </para>
     /// </remarks>
     /// <threadsafety instance="false" static="true" />
-    [DefaultEvent("FileOk"), DefaultProperty("FileName")]
+    [DefaultEvent("FileOk")]
+    [DefaultProperty("FileName")]
     public abstract class VistaFileDialog
     {
         internal const int HelpButtonId = 0x4001;
@@ -50,7 +56,8 @@ namespace Ookii.Dialogs.Wpf
         /// <summary>
         /// Event raised when the user clicks on the Open or Save button on a file dialog box.
         /// </summary>
-        [Description("Event raised when the user clicks on the Open or Save button on a file dialog box."), Category("Action")]
+        [Description("Event raised when the user clicks on the Open or Save button on a file dialog box.")]
+        [Category("Action")]
         public event CancelEventHandler FileOk;
 
         /// <summary>
@@ -58,6 +65,7 @@ namespace Ookii.Dialogs.Wpf
         /// </summary>
         protected VistaFileDialog()
         {
+            // ReSharper disable once VirtualMemberCallInConstructor
             Reset();
         }
 
@@ -89,7 +97,10 @@ namespace Ookii.Dialogs.Wpf
         /// <see langword="true" /> if the dialog box adds an extension to a file name if the user omits the extension; otherwise, <see langword="false" />. 
         /// The default value is <see langword="true" />.
         /// </value>
-        [Description("A value indicating whether the dialog box automatically adds an extension to a file name if the user omits the extension."), Category("Behavior"), DefaultValue(true)]
+        [Description(
+            "A value indicating whether the dialog box automatically adds an extension to a file name if the user omits the extension.")]
+        [Category("Behavior")]
+        [DefaultValue(true)]
         public bool AddExtension
         {
             get
@@ -114,7 +125,10 @@ namespace Ookii.Dialogs.Wpf
         /// <see langword="true" /> if the dialog box displays a warning if the user specifies a file name that does not exist;
         /// otherwise, <see langword="false" />. The default value is <see langword="false" />.
         /// </value>
-        [Description("A value indicating whether the dialog box displays a warning if the user specifies a file name that does not exist."), Category("Behavior"), DefaultValue(false)]
+        [Description(
+            "A value indicating whether the dialog box displays a warning if the user specifies a file name that does not exist.")]
+        [Category("Behavior")]
+        [DefaultValue(false)]
         public virtual bool CheckFileExists
         {
             get
@@ -139,7 +153,10 @@ namespace Ookii.Dialogs.Wpf
         /// <see langword="true" /> if the dialog box displays a warning when the user specifies a path that does not exist; otherwise, <see langword="false" />. 
         /// The default value is <see langword="true" />.
         /// </value>
-        [Description("A value indicating whether the dialog box displays a warning if the user specifies a path that does not exist."), DefaultValue(true), Category("Behavior")]
+        [Description(
+            "A value indicating whether the dialog box displays a warning if the user specifies a path that does not exist.")]
+        [DefaultValue(true)]
+        [Category("Behavior")]
         public bool CheckPathExists
         {
             get
@@ -163,7 +180,9 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// The default file name extension. The returned string does not include the period. The default value is an empty string ("").
         /// </value>
-        [Category("Behavior"), DefaultValue(""), Description("The default file name extension.")]
+        [Category("Behavior")]
+        [DefaultValue("")]
+        [Description("The default file name extension.")]
         public string DefaultExt
         {
             get
@@ -199,7 +218,10 @@ namespace Ookii.Dialogs.Wpf
         /// <see langword="true" /> if the dialog box returns the location of the file referenced by the shortcut; otherwise, <see langword="false" />.
         /// The default value is <see langword="true" />.
         /// </value>
-        [Category("Behavior"), Description("A value indicating whether the dialog box returns the location of the file referenced by the shortcut or whether it returns the location of the shortcut (.lnk)."), DefaultValue(true)]
+        [Category("Behavior")]
+        [Description(
+            "A value indicating whether the dialog box returns the location of the file referenced by the shortcut or whether it returns the location of the shortcut (.lnk).")]
+        [DefaultValue(true)]
         public bool DereferenceLinks
         {
             get
@@ -224,7 +246,9 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// The file name selected in the file dialog box. The default value is an empty string ("").
         /// </value>
-        [DefaultValue(""), Category("Data"), Description("A string containing the file name selected in the file dialog box.")]
+        [DefaultValue("")]
+        [Category("Data")]
+        [Description("A string containing the file name selected in the file dialog box.")]
         public string FileName
         {
             get
@@ -234,8 +258,7 @@ namespace Ookii.Dialogs.Wpf
 
                 if( _fileNames == null || _fileNames.Length == 0 || string.IsNullOrEmpty(_fileNames[0]) )
                     return string.Empty;
-                else
-                    return _fileNames[0];
+                return _fileNames[0];
             }
             set
             {
@@ -250,10 +273,13 @@ namespace Ookii.Dialogs.Wpf
         /// Gets the file names of all selected files in the dialog box.
         /// </summary>
         /// <value>
-        /// An array of type <see cref="String"/>, containing the file names of all selected files in the dialog box.
+        /// An array of type <see cref="string"/>, containing the file names of all selected files in the dialog box.
         /// </value>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")] // suppressed because it matches FileDialog
-        [Description("The file names of all selected files in the dialog box."), Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [SuppressMessage("Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays")] // suppressed because it matches FileDialog
+        [Description("The file names of all selected files in the dialog box.")]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string[] FileNames
         {
             get
@@ -272,7 +298,11 @@ namespace Ookii.Dialogs.Wpf
         /// The file filtering options available in the dialog box.
         /// </value>
         /// <exception cref="System.ArgumentException">Filter format is invalid.</exception>
-        [Description("The current file name filter string, which determines the choices that appear in the \"Save as file type\" or \"Files of type\" box in the dialog box."), Category("Behavior"), Localizable(true), DefaultValue("")]
+        [Description(
+            "The current file name filter string, which determines the choices that appear in the \"Save as file type\" or \"Files of type\" box in the dialog box.")]
+        [Category("Behavior")]
+        [Localizable(true)]
+        [DefaultValue("")]
         public string Filter
         {
             get
@@ -291,9 +321,9 @@ namespace Ookii.Dialogs.Wpf
                     {
                         if( !string.IsNullOrEmpty(value) )
                         {
-                            string[] filterElements = value.Split(new char[] { '|' });
-                            if( filterElements == null || filterElements.Length % 2 != 0 )
-                                throw new ArgumentException(Properties.Resources.InvalidFilterString);
+                            string[] filterElements = value.Split('|');
+                            if( filterElements.Length % 2 != 0 )
+                                throw new ArgumentException(Resources.InvalidFilterString);
 
                         }
                         else
@@ -310,7 +340,9 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// A value containing the index of the filter currently selected in the file dialog box. The default value is 1.
         /// </value>
-        [Description("The index of the filter currently selected in the file dialog box."), Category("Behavior"), DefaultValue(1)]
+        [Description("The index of the filter currently selected in the file dialog box.")]
+        [Category("Behavior")]
+        [DefaultValue(1)]
         public int FilterIndex
         {
             get
@@ -334,7 +366,9 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// The initial directory displayed by the file dialog box. The default is an empty string ("").
         /// </value>
-        [Description("The initial directory displayed by the file dialog box."), DefaultValue(""), Category("Data")]
+        [Description("The initial directory displayed by the file dialog box.")]
+        [DefaultValue("")]
+        [Category("Data")]
         public string InitialDirectory
         {
             get
@@ -344,8 +378,7 @@ namespace Ookii.Dialogs.Wpf
 
                 if( _initialDirectory != null )
                     return _initialDirectory;
-                else
-                    return string.Empty;
+                return string.Empty;
             }
             set
             {
@@ -363,7 +396,9 @@ namespace Ookii.Dialogs.Wpf
         /// <see langword="true" /> if the dialog box restores the current directory to its original value if the user changed the 
         /// directory while searching for files; otherwise, <see langword="false" />. The default value is <see langword="false" />.
         /// </value>
-        [DefaultValue(false), Description("A value indicating whether the dialog box restores the current directory before closing."), Category("Behavior")]
+        [DefaultValue(false)]
+        [Description("A value indicating whether the dialog box restores the current directory before closing.")]
+        [Category("Behavior")]
         public bool RestoreDirectory
         {
             get
@@ -387,7 +422,10 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// The file dialog box title. The default value is an empty string ("").
         /// </value>
-        [Description("The file dialog box title."), Category("Appearance"), DefaultValue(""), Localizable(true)]
+        [Description("The file dialog box title.")]
+        [Category("Appearance")]
+        [DefaultValue("")]
+        [Localizable(true)]
         public string Title
         {
             get
@@ -396,8 +434,7 @@ namespace Ookii.Dialogs.Wpf
                     return DownlevelDialog.Title;
                 if( _title != null )
                     return _title;
-                else
-                    return string.Empty;
+                return string.Empty;
             }
             set
             {
@@ -415,7 +452,9 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// <see langword="true" /> if the dialog box accepts only valid Win32 file names; otherwise, <see langword="false" />. The default value is <see langword="false" />.
         /// </value>
-        [DefaultValue(true), Category("Behavior"), Description("A value indicating whether the dialog box accepts only valid Win32 file names.")]
+        [DefaultValue(true)]
+        [Category("Behavior")]
+        [Description("A value indicating whether the dialog box accepts only valid Win32 file names.")]
         public bool ValidateNames
         {
             get
@@ -459,7 +498,7 @@ namespace Ookii.Dialogs.Wpf
                 if( value != null )
                 {
                     //value.HelpRequest += new EventHandler(DownlevelDialog_HelpRequest);
-                    value.FileOk += new CancelEventHandler(DownlevelDialog_FileOk);
+                    value.FileOk += DownlevelDialog_FileOk;
                 }
             }
         }
@@ -527,11 +566,8 @@ namespace Ookii.Dialogs.Wpf
             _owner = owner;
             if( DownlevelDialog != null )
                 return DownlevelDialog.ShowDialog(owner);
-            else
-            {
-                IntPtr ownerHandle = owner == null ? NativeMethods.GetActiveWindow() : new WindowInteropHelper(owner).Handle;
-                return new bool?(RunFileDialog(ownerHandle));
-            }
+            IntPtr ownerHandle = owner == null ? NativeMethods.GetActiveWindow() : new WindowInteropHelper(owner).Handle;
+            return RunFileDialog(ownerHandle);
         }
 
         #endregion
@@ -582,15 +618,14 @@ namespace Ookii.Dialogs.Wpf
                 (this is VistaOpenFileDialog ? ComDlgResources.LoadString(ComDlgResources.ComDlgResourceId.Open) : ComDlgResources.LoadString(ComDlgResources.ComDlgResourceId.ConfirmSaveAs)) : 
                 _title;
             MessageBoxOptions options = 0;
-            if( System.Threading.Thread.CurrentThread.CurrentUICulture.TextInfo.IsRightToLeft )
+            if( Thread.CurrentThread.CurrentUICulture.TextInfo.IsRightToLeft )
                 options |= MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading;
             return MessageBox.Show(_owner, text, caption, buttons, icon, defaultResult, options) == MessageBoxResult.Yes;
         }
         
         internal virtual void SetDialogProperties(IFileDialog dialog)
         {
-            uint cookie;
-            dialog.Advise(new VistaFileDialogEvents(this), out cookie);
+            dialog.Advise(new VistaFileDialogEvents(this), out uint _);
 
             // Set the default file name
             if( !(_fileNames == null || _fileNames.Length == 0 || string.IsNullOrEmpty(_fileNames[0])) )
@@ -611,7 +646,7 @@ namespace Ookii.Dialogs.Wpf
             // Set the filter
             if( !string.IsNullOrEmpty(_filter) )
             {
-                string[] filterElements = _filter.Split(new char[] { '|' });
+                string[] filterElements = _filter.Split('|');
                 NativeMethods.COMDLG_FILTERSPEC[] filter = new NativeMethods.COMDLG_FILTERSPEC[filterElements.Length / 2];
                 for( int x = 0; x < filterElements.Length; x += 2 )
                 {
@@ -673,14 +708,14 @@ namespace Ookii.Dialogs.Wpf
                     if( (uint)result == (uint)HRESULT.ERROR_CANCELLED )
                         return false;
                     else
-                        throw System.Runtime.InteropServices.Marshal.GetExceptionForHR(result);
+                        throw Marshal.GetExceptionForHR(result);
                 }
                 return true;
             }
             finally
             {
                 if( dialog != null )
-                    System.Runtime.InteropServices.Marshal.FinalReleaseComObject(dialog);
+                    Marshal.FinalReleaseComObject(dialog);
             }
         }
 

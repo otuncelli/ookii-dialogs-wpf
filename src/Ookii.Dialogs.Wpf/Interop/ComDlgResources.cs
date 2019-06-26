@@ -3,7 +3,7 @@
 
 namespace Ookii.Dialogs.Wpf.Interop
 {
-    static class ComDlgResources
+    internal static class ComDlgResources
     {
         public enum ComDlgResourceId
         {
@@ -15,7 +15,7 @@ namespace Ookii.Dialogs.Wpf.Interop
             ConfirmSaveAs = 435
         }
 
-        private static Win32Resources _resources = new Win32Resources("comdlg32.dll");
+        private static readonly Win32Resources _resources = new Win32Resources("comdlg32.dll");
 
         public static string LoadString(ComDlgResourceId id)
         {

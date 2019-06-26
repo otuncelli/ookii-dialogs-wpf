@@ -8,7 +8,9 @@
 // "In Project Suppression File". 
 // You do not need to add suppressions to this file manually. 
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources", Scope = "member", Target = "Ookii.Dialogs.Wpf.ComCtlv6ActivationContext.#_cookie")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing", Scope = "member", Target = "Ookii.Dialogs.Wpf.ComCtlv6ActivationContext.#Dispose(System.Boolean)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Scope = "member", Target = "Ookii.Dialogs.Wpf.VistaFileDialog.#.ctor()")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multiselect", Scope = "member", Target = "Ookii.Dialogs.Wpf.VistaOpenFileDialog.#Multiselect")]
+using System.Diagnostics.CodeAnalysis;
+
+[assembly: SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources", Scope = "member", Target = "Ookii.Dialogs.Wpf.ComCtlv6ActivationContext.#_cookie")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing", Scope = "member", Target = "Ookii.Dialogs.Wpf.ComCtlv6ActivationContext.#Dispose(System.Boolean)")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Scope = "member", Target = "Ookii.Dialogs.Wpf.VistaFileDialog.#.ctor()")]
+[assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Multiselect", Scope = "member", Target = "Ookii.Dialogs.Wpf.VistaOpenFileDialog.#Multiselect")]

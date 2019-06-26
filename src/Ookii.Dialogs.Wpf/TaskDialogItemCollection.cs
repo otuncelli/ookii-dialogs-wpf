@@ -1,7 +1,9 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
+
 using System;
 using System.Collections.ObjectModel;
+using Ookii.Dialogs.Wpf.Properties;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -12,7 +14,7 @@ namespace Ookii.Dialogs.Wpf
     /// <threadsafety instance="false" static="true" />
     public class TaskDialogItemCollection<T> : Collection<T> where T : TaskDialogItem
     {
-        private TaskDialog _owner;
+        private readonly TaskDialog _owner;
 
         internal TaskDialogItemCollection(TaskDialog owner)
         {
@@ -57,7 +59,7 @@ namespace Ookii.Dialogs.Wpf
                 throw new ArgumentNullException(nameof(item));
 
             if( item.Owner != null )
-                throw new ArgumentException(Properties.Resources.TaskDialogItemHasOwnerError);
+                throw new ArgumentException(Resources.TaskDialogItemHasOwnerError);
 
             item.Owner = _owner;
             try
@@ -122,7 +124,7 @@ namespace Ookii.Dialogs.Wpf
             if( base[index] != item )
             {
                 if( item.Owner != null )
-                    throw new ArgumentException(Properties.Resources.TaskDialogItemHasOwnerError);
+                    throw new ArgumentException(Resources.TaskDialogItemHasOwnerError);
                 item.Owner = _owner;
                 try
                 {

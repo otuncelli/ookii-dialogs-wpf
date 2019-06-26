@@ -27,6 +27,6 @@ namespace Ookii.Dialogs.Wpf
         /// <summary>
         /// Shield icon.
         /// </summary>
-        Shield = 0xFFFC, // MAKEINTRESOURCEW(-4)
+        Shield = 0xFFFC // MAKEINTRESOURCEW(-4)
     }
 }

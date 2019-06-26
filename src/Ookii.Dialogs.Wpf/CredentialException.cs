@@ -1,7 +1,11 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
+
 using System;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Ookii.Dialogs.Wpf.Properties;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -9,15 +13,15 @@ namespace Ookii.Dialogs.Wpf
     /// The exception that is thrown when an error occurs getting credentials.
     /// </summary>
     /// <threadsafety instance="false" static="true" />
-    [Serializable()]
-    public class CredentialException : System.ComponentModel.Win32Exception
+    [Serializable]
+    public class CredentialException : Win32Exception
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CredentialException" /> class.
         /// </summary>
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         public CredentialException()
-            : base(Properties.Resources.CredentialError)
+            : base(Resources.CredentialError)
         {
         }
 
@@ -69,7 +73,7 @@ namespace Ookii.Dialogs.Wpf
         /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
         /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-        protected CredentialException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+        protected CredentialException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

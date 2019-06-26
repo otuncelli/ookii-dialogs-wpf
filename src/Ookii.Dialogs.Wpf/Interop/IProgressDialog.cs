@@ -9,9 +9,9 @@ namespace Ookii.Dialogs.Wpf.Interop
     {
     }
 
-    [ComImport,
-    Guid(IIDGuid.IProgressDialog),
-    CoClass(typeof(ProgressDialogRCW))]
+    [ComImport]
+    [Guid(IIDGuid.IProgressDialog)]
+    [CoClass(typeof(ProgressDialogRCW))]
     internal interface ProgressDialog : IProgressDialog
     {
     }

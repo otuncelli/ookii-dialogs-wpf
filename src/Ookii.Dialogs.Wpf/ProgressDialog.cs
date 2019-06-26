@@ -1,10 +1,15 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
+
 using System;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using Ookii.Dialogs.Wpf.Interop;
+using Ookii.Dialogs.Wpf.Properties;
 
 namespace Ookii.Dialogs.Wpf
 {
@@ -20,7 +25,9 @@ namespace Ookii.Dialogs.Wpf
     /// </para>
     /// </remarks>
     /// <threadsafety static="true" instance="false" />
-    [DefaultEvent("DoWork"), DefaultProperty("Text"), Description("Represents a dialog that can be used to report progress to the user.")]
+    [DefaultEvent("DoWork")]
+    [DefaultProperty("Text")]
+    [Description("Represents a dialog that can be used to report progress to the user.")]
     public partial class ProgressDialog : Component
     {
         private class ProgressChangedData
@@ -33,7 +40,7 @@ namespace Ookii.Dialogs.Wpf
         private string _windowTitle;
         private string _text;
         private string _description;
-        private Interop.IProgressDialog _dialog;
+        private IProgressDialog _dialog;
         private string _cancellationText;
         private bool _useCompactPathsForText;
         private bool _useCompactPathsForDescription;
@@ -97,7 +104,10 @@ namespace Ookii.Dialogs.Wpf
         ///   no effect while the dialog is being displayed.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The text in the progress dialog's title bar."), DefaultValue("")]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description("The text in the progress dialog's title bar.")]
+        [DefaultValue("")]
         public string WindowTitle
         {
             get => _windowTitle ?? string.Empty;
@@ -120,7 +130,9 @@ namespace Ookii.Dialogs.Wpf
         ///   is to use the <see cref="ReportProgress(int,string,string)"/> method.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("A short description of the operation being carried out.")]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description("A short description of the operation being carried out.")]
         public string Text
         {
             get => _text ?? string.Empty;
@@ -148,7 +160,10 @@ namespace Ookii.Dialogs.Wpf
         ///   created the progress dialog.
         /// </para>
         /// </remarks>
-        [Category("Behavior"), Description("Indicates whether path strings in the Text property should be compacted if they are too large to fit on one line."), DefaultValue(false)]
+        [Category("Behavior")]
+        [Description(
+            "Indicates whether path strings in the Text property should be compacted if they are too large to fit on one line.")]
+        [DefaultValue(false)]
         public bool UseCompactPathsForText
         {
             get => _useCompactPathsForText;
@@ -175,7 +190,10 @@ namespace Ookii.Dialogs.Wpf
         ///   is to use the <see cref="ReportProgress(int,string,string)"/> method.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("Additional details about the operation being carried out."), DefaultValue("")]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description("Additional details about the operation being carried out.")]
+        [DefaultValue("")]
         public string Description
         {
             get => _description ?? string.Empty;
@@ -203,7 +221,10 @@ namespace Ookii.Dialogs.Wpf
         ///   created the progress dialog.
         /// </para>
         /// </remarks>
-        [Category("Behavior"), Description("Indicates whether path strings in the Description property should be compacted if they are too large to fit on one line."), DefaultValue(false)]
+        [Category("Behavior")]
+        [Description(
+            "Indicates whether path strings in the Description property should be compacted if they are too large to fit on one line.")]
+        [DefaultValue(false)]
         public bool UseCompactPathsForDescription
         {
             get => _useCompactPathsForDescription;
@@ -226,7 +247,10 @@ namespace Ookii.Dialogs.Wpf
         ///   no effect while the dialog is being displayed.
         /// </para>
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The text that will be shown after the Cancel button is pressed."), DefaultValue("")]
+        [Localizable(true)]
+        [Category("Appearance")]
+        [Description("The text that will be shown after the Cancel button is pressed.")]
+        [DefaultValue("")]
         public string CancellationText
         {
             get => _cancellationText ?? string.Empty;
@@ -246,7 +270,9 @@ namespace Ookii.Dialogs.Wpf
         ///   no effect while the dialog is being displayed.
         /// </para>
         /// </remarks>
-        [Category("Appearance"), Description("Indicates whether an estimate of the remaining time will be shown."), DefaultValue(false)]
+        [Category("Appearance")]
+        [Description("Indicates whether an estimate of the remaining time will be shown.")]
+        [DefaultValue(false)]
         public bool ShowTimeRemaining { get; set; }
 
         /// <summary>
@@ -270,7 +296,10 @@ namespace Ookii.Dialogs.Wpf
         ///   Setting this property to <see langword="false"/> is not recommended unless absolutely necessary.
         /// </para>
         /// </remarks>
-        [Category("Appearance"), Description("Indicates whether the dialog has a cancel button. Do not set to false unless absolutely necessary."), DefaultValue(true)]
+        [Category("Appearance")]
+        [Description(
+            "Indicates whether the dialog has a cancel button. Do not set to false unless absolutely necessary.")]
+        [DefaultValue(true)]
         public bool ShowCancelButton { get; set; }
 
         /// <summary>
@@ -290,7 +319,9 @@ namespace Ookii.Dialogs.Wpf
         ///   no effect while the dialog is being displayed.
         /// </para>
         /// </remarks>
-        [Category("Window Style"), Description("Indicates whether the progress dialog has a minimize button."), DefaultValue(true)]
+        [Category("Window Style")]
+        [Description("Indicates whether the progress dialog has a minimize button.")]
+        [DefaultValue(true)]
         public bool MinimizeBox { get; set; }
 
         /// <summary>
@@ -331,7 +362,8 @@ namespace Ookii.Dialogs.Wpf
         ///   no effect while the dialog is being displayed.
         /// </para>
         /// </remarks>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public AnimationResource Animation { get; set; }
 
         /// <summary>
@@ -357,7 +389,9 @@ namespace Ookii.Dialogs.Wpf
         ///   no effect while the dialog is being displayed.
         /// </para>
         /// </remarks>
-        [Category("Appearance"), Description("Indicates the style of the progress bar."), DefaultValue(ProgressBarStyle.ProgressBar)]
+        [Category("Appearance")]
+        [Description("Indicates the style of the progress bar.")]
+        [DefaultValue(ProgressBarStyle.ProgressBar)]
         public ProgressBarStyle ProgressBarStyle { get; set; }
 
 
@@ -556,8 +590,8 @@ namespace Ookii.Dialogs.Wpf
             if( percentProgress < 0 || percentProgress > 100 )
                 throw new ArgumentOutOfRangeException(nameof(percentProgress));
             if( _dialog == null )
-                throw new InvalidOperationException(Properties.Resources.ProgressDialogNotRunningError);
-            _backgroundWorker.ReportProgress(percentProgress, new ProgressChangedData() { Text = text, Description = description, UserState = userState });
+                throw new InvalidOperationException(Resources.ProgressDialogNotRunningError);
+            _backgroundWorker.ReportProgress(percentProgress, new ProgressChangedData { Text = text, Description = description, UserState = userState });
         }
 
         /// <summary>
@@ -593,7 +627,7 @@ namespace Ookii.Dialogs.Wpf
         private void RunProgressDialog(IntPtr owner, object argument)
         {
             if( _backgroundWorker.IsBusy )
-                throw new InvalidOperationException(Properties.Resources.ProgressDialogRunning);
+                throw new InvalidOperationException(Resources.ProgressDialogRunning);
 
             if( Animation != null )
             {
@@ -603,11 +637,11 @@ namespace Ookii.Dialogs.Wpf
                 }
                 catch( Win32Exception ex )
                 {
-                    throw new InvalidOperationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.AnimationLoadErrorFormat, ex.Message), ex);
+                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Resources.AnimationLoadErrorFormat, ex.Message), ex);
                 }
-                catch( System.IO.FileNotFoundException ex )
+                catch( FileNotFoundException ex )
                 {
-                    throw new InvalidOperationException(string.Format(System.Globalization.CultureInfo.CurrentCulture, Properties.Resources.AnimationLoadErrorFormat, ex.Message), ex);
+                    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, Resources.AnimationLoadErrorFormat, ex.Message), ex);
                 }
             }
 
@@ -622,27 +656,27 @@ namespace Ookii.Dialogs.Wpf
             _dialog.SetLine(1, Text, UseCompactPathsForText, IntPtr.Zero);
             _dialog.SetLine(2, Description, UseCompactPathsForDescription, IntPtr.Zero);
 
-            Interop.ProgressDialogFlags flags = Interop.ProgressDialogFlags.Normal;
+            ProgressDialogFlags flags = ProgressDialogFlags.Normal;
             if( owner != IntPtr.Zero )
-                flags |= Interop.ProgressDialogFlags.Modal;
+                flags |= ProgressDialogFlags.Modal;
             switch( ProgressBarStyle )
             {
             case ProgressBarStyle.None:
-                flags |= Interop.ProgressDialogFlags.NoProgressBar;
+                flags |= ProgressDialogFlags.NoProgressBar;
                 break;
             case ProgressBarStyle.MarqueeProgressBar:
                 if( NativeMethods.IsWindowsVistaOrLater )
-                    flags |= Interop.ProgressDialogFlags.MarqueeProgress;
+                    flags |= ProgressDialogFlags.MarqueeProgress;
                 else
-                    flags |= Interop.ProgressDialogFlags.NoProgressBar; // Older than Vista doesn't support marquee.
+                    flags |= ProgressDialogFlags.NoProgressBar; // Older than Vista doesn't support marquee.
                 break;
             }
             if( ShowTimeRemaining )
-                flags |= Interop.ProgressDialogFlags.AutoTime;
+                flags |= ProgressDialogFlags.AutoTime;
             if( !ShowCancelButton )
-                flags |= Interop.ProgressDialogFlags.NoCancel;
+                flags |= ProgressDialogFlags.NoCancel;
             if( !MinimizeBox )
-                flags |= Interop.ProgressDialogFlags.NoMinimize;
+                flags |= ProgressDialogFlags.NoMinimize;
 
             _dialog.StartProgressDialog(owner, null, flags, IntPtr.Zero);
             _backgroundWorker.RunWorkerAsync(argument);
@@ -675,8 +709,7 @@ namespace Ookii.Dialogs.Wpf
             if( e.ProgressPercentage >= 0 && e.ProgressPercentage <= 100 )
             {
                 _dialog.SetProgress((uint)e.ProgressPercentage, 100);
-                ProgressChangedData data = e.UserState as ProgressChangedData;
-                if( data != null )
+                if( e.UserState is ProgressChangedData data )
                 {
                     if( data.Text != null )
                         Text = data.Text;
