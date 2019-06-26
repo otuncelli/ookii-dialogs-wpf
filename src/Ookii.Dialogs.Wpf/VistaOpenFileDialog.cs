@@ -227,7 +227,7 @@ namespace Ookii.Dialogs.Wpf
                 IFileDialogCustomize customize = (IFileDialogCustomize)dialog;
                 int selected;
                 customize.GetSelectedControlItem(_openDropDownId, out selected);
-                _readOnlyChecked = (selected == _readOnlyItemId);
+                _readOnlyChecked = selected == _readOnlyItemId;
             }
 
             base.GetResult(dialog);

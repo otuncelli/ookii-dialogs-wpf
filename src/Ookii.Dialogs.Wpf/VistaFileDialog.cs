@@ -297,7 +297,7 @@ namespace Ookii.Dialogs.Wpf
         /// <value>
         /// The file filtering options available in the dialog box.
         /// </value>
-        /// <exception cref="System.ArgumentException">Filter format is invalid.</exception>
+        /// <exception cref="ArgumentException">Filter format is invalid.</exception>
         [Description(
             "The current file name filter string, which determines the choices that appear in the \"Save as file type\" or \"Files of type\" box in the dialog box.")]
         [Category("Behavior")]
@@ -601,7 +601,7 @@ namespace Ookii.Dialogs.Wpf
         /// <summary>
         /// Raises the <see cref="FileOk" /> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.ComponentModel.CancelEventArgs" /> that contains the event data.</param>
+        /// <param name="e">A <see cref="CancelEventArgs" /> that contains the event data.</param>
         protected virtual void OnFileOk(CancelEventArgs e)
         {
             CancelEventHandler handler = FileOk;
@@ -615,7 +615,7 @@ namespace Ookii.Dialogs.Wpf
         internal bool PromptUser(string text, MessageBoxButton buttons, MessageBoxImage icon, MessageBoxResult defaultResult)
         {
             string caption = string.IsNullOrEmpty(_title) ? 
-                (this is VistaOpenFileDialog ? ComDlgResources.LoadString(ComDlgResources.ComDlgResourceId.Open) : ComDlgResources.LoadString(ComDlgResources.ComDlgResourceId.ConfirmSaveAs)) : 
+                this is VistaOpenFileDialog ? ComDlgResources.LoadString(ComDlgResources.ComDlgResourceId.Open) : ComDlgResources.LoadString(ComDlgResources.ComDlgResourceId.ConfirmSaveAs) : 
                 _title;
             MessageBoxOptions options = 0;
             if( Thread.CurrentThread.CurrentUICulture.TextInfo.IsRightToLeft )
@@ -677,7 +677,7 @@ namespace Ookii.Dialogs.Wpf
                 dialog.SetTitle(_title);
             }
 
-            dialog.SetOptions((_options | NativeMethods.FOS.FOS_FORCEFILESYSTEM));
+            dialog.SetOptions(_options | NativeMethods.FOS.FOS_FORCEFILESYSTEM);
         }
 
         internal abstract IFileDialog CreateFileDialog();

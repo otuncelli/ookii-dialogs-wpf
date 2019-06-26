@@ -78,6 +78,9 @@
     <Compile Include="Interop\ShellWrapperDefinitions.cs" />
     <Compile Include="Interop\Win32Resources.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="OperationsProgressDialogAction.cs" />
+    <Compile Include="OperationsProgressDialogMode.cs" />
+    <Compile Include="OperationsProgressDialogStatus.cs" />
     <Compile Include="ProgressBarState.cs" />
     <Compile Include="ProgressBarStyle.cs" />
     <Compile Include="OperationsProgressDialog.cs">

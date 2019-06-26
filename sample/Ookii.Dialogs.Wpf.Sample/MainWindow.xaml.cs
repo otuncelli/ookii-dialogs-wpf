@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
-using Ookii.Dialogs.Wpf.Interop;
 
 namespace Ookii.Dialogs.Wpf.Sample
 {
@@ -22,7 +21,6 @@ namespace Ookii.Dialogs.Wpf.Sample
 
         private OperationsProgressDialog _sampleOperationsProgressDialog = new OperationsProgressDialog
         {
-            NoTime =  true,
             DontDisplayDestPath = true,
             DontDisplayLocations = true,
             DontDisplaySourcePath = true,
@@ -30,7 +28,7 @@ namespace Ookii.Dialogs.Wpf.Sample
             AllowUndo = true,
             EnablePause = true,
             MinimizeBox = false,
-            ShowCancelButton = false,
+            //ShowCancelButton = false,
             ShowTimeRemaining = false
         };
 
@@ -151,7 +149,7 @@ namespace Ookii.Dialogs.Wpf.Sample
             else
             {
                 _sampleOperationsProgressDialog.Show();
-                _sampleOperationsProgressDialog.SetOperation(OperationsProgressDialogAction.None);
+                _sampleOperationsProgressDialog.SetOperation(OperationsProgressDialogAction.Renaming);
             }
         }
 
@@ -240,9 +238,31 @@ namespace Ookii.Dialogs.Wpf.Sample
             for (int x = 0; x <= 100; ++x)
             {
                 Thread.Sleep(500);
+
                 // Periodically check CancellationPending and abort the operation if required.
-                if (_sampleOperationsProgressDialog.CancellationPending)
+                OperationsProgressDialogStatus status;
+
+                if(x == 3)
+                    _sampleOperationsProgressDialog.SetMode(OperationsProgressDialogMode.ErrorsBlocking);
+
+                if (x == 6)
+                    _sampleOperationsProgressDialog.SetMode(OperationsProgressDialogMode.Indeterminate);
+
+                if (x == 9)
+                    _sampleOperationsProgressDialog.SetMode(OperationsProgressDialogMode.Preflight);
+
+                if (x == 12)
+                    _sampleOperationsProgressDialog.SetMode(OperationsProgressDialogMode.Run);
+
+                if (x == 15)
+                    _sampleOperationsProgressDialog.SetMode(OperationsProgressDialogMode.Undoing);
+
+                while ((status = _sampleOperationsProgressDialog.Status) == OperationsProgressDialogStatus.Paused)
+                    Thread.Sleep(100);
+
+                if (status == OperationsProgressDialogStatus.Cancelled)
                     return;
+
                 // ReportProgress can also modify the main text and description; pass null to leave them unchanged.
                 // If _sampleProgressDialog.ShowTimeRemaining is set to true, the time will automatically be calculated based on
                 // the frequency of the calls to ReportProgress.

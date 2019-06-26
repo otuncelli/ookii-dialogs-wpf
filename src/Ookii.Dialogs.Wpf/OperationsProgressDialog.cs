@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -11,6 +12,18 @@ using Ookii.Dialogs.Wpf.Properties;
 
 namespace Ookii.Dialogs.Wpf
 {
+    /// <summary>
+    /// Represents a dialog that can be used to report progress to the user.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    ///   This class provides a wrapper for the native Windows IOperationsProgressDialog API.
+    /// </para>
+    /// <para>
+    ///   The <see cref="OperationsProgressDialog"/> class requires Windows Vista or newer versions of Windows.
+    /// </para>
+    /// </remarks>
+    /// <threadsafety static="true" instance="false" />
     [DefaultEvent("DoWork")]
     [Description("Represents a dialog that can be used to report progress to the user.")]
     public partial class OperationsProgressDialog : Component
@@ -30,7 +43,10 @@ namespace Ookii.Dialogs.Wpf
         }
 
         private IOperationsProgressDialog _dialog;
-        private bool _cancellationPending;
+        private volatile OperationsProgressDialogStatus _status;
+
+        private const int UPDATE_LOCATIONS = -1;
+        private const int UPDATE_STATUS = -2;
 
         /// <summary>
         /// Event raised when the dialog is displayed.
@@ -107,7 +123,7 @@ namespace Ookii.Dialogs.Wpf
         /// </note>
         /// <para>
         ///   The event handler for the <see cref="DoWork"/> event must periodically check the value of the
-        ///   <see cref="CancellationPending"/> property to see if the operation has been cancelled if this
+        ///   <see cref="Status"/> property to see if the operation has been cancelled if this
         ///   property is <see langword="true"/>.
         /// </para>
         /// <para>
@@ -115,7 +131,8 @@ namespace Ookii.Dialogs.Wpf
         /// </para>
         /// </remarks>
         [Category("Appearance")]
-        [Description("Indicates whether the dialog has a cancel button. Do not set to false unless absolutely necessary.")]
+        [Description(
+            "Indicates whether the dialog has a cancel button. Do not set to false unless absolutely necessary.")]
         [DefaultValue(true)]
         public bool ShowCancelButton { get; set; }
 
@@ -142,23 +159,24 @@ namespace Ookii.Dialogs.Wpf
         public bool MinimizeBox { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the user has requested cancellation of the operation.
+        /// Gets a value indicating current status of the operation.
         /// </summary>
         /// <value>
-        /// <see langword="true" /> if the user has cancelled the progress dialog; otherwise, <see langword="false" />. The default is <see langword="false" />.
+        /// One of the values of <see cref="OperationsProgressDialogStatus"/>.
         /// </value>
         /// <remarks>
-        /// The event handler for the <see cref="DoWork"/> event must periodically check this property and abort the operation
-        /// if it returns <see langword="true"/>.
+        /// The event handler for the <see cref="DoWork"/> event must periodically check this property.
         /// </remarks>
         [Browsable(false)]
-        public bool CancellationPending
+        public OperationsProgressDialogStatus Status
         {
             get
             {
-                _backgroundWorker.ReportProgress(-1); // Call with an out-of-range percentage will update the value of
-                // _cancellationPending but do nothing else.
-                return _cancellationPending;
+                if (_dialog == null)
+                    return OperationsProgressDialogStatus.Stopped;
+
+                _backgroundWorker.ReportProgress(UPDATE_STATUS);
+                return _status;
             }
         }
 
@@ -166,19 +184,17 @@ namespace Ookii.Dialogs.Wpf
         /// Gets or sets a value that indicates whether a regular or marquee style progress bar should be used.
         /// </summary>
         /// <value>
-        /// One of the values of <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle"/>. 
-        /// The default value is <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.ProgressBar"/>.
+        /// One of the values of <see cref="Wpf.ProgressBarStyle"/>. 
+        /// The default value is <see cref="Wpf.ProgressBarStyle.ProgressBar"/>.
         /// </value>
         /// <remarks>
         /// <note>
         ///   Operating systems older than Windows Vista do not support marquee progress bars on the progress dialog. On those operating systems, the
-        ///   progress bar will be hidden completely if this property is <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.MarqueeProgressBar"/>.
+        ///   progress bar will be hidden completely if this property is <see cref="Wpf.ProgressBarStyle.MarqueeProgressBar"/>.
         /// </note>
         /// <para>
-        ///   When this property is set to <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.ProgressBar" />, use the <see cref="ReportProgress(int)"/> method to set
-        ///   the value of the progress bar. When this property is set to <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.MarqueeProgressBar"/>
-        ///   you can still use the <see cref="ReportProgress(int,string,string)"/> method to update the text of the dialog,
-        ///   but the percentage will be ignored.
+        ///   When this property is set to <see cref="Wpf.ProgressBarStyle.ProgressBar" />, use the <see cref="UpdateProgress(int,int,long,long,int,int,object)"/> method to set
+        ///   the value of the progress bar.
         /// </para>
         /// <para>
         ///   This property must be set before <see cref="ShowDialog()"/> or <see cref="Show()"/> is called. Changing property has
@@ -192,10 +208,10 @@ namespace Ookii.Dialogs.Wpf
 
 
         /// <summary>
-        /// Gets a value that indicates whether the <see cref="ProgressDialog"/> is running an asynchronous operation.
+        /// Gets a value that indicates whether the <see cref="OperationsProgressDialog"/> is running an asynchronous operation.
         /// </summary>
         /// <value>
-        /// <see langword="true"/> if the <see cref="ProgressDialog"/> is running an asynchronous operation; 
+        /// <see langword="true"/> if the <see cref="OperationsProgressDialog"/> is running an asynchronous operation; 
         /// otherwise, <see langword="false"/>.
         /// </value>
         [Browsable(false)]
@@ -213,9 +229,6 @@ namespace Ookii.Dialogs.Wpf
 
         public bool AllowUndo { get; set; }
 
-        public bool NoTime { get; set; }
-
-
         /// <summary>
         /// Displays the progress dialog as a modeless dialog.
         /// </summary>
@@ -230,8 +243,6 @@ namespace Ookii.Dialogs.Wpf
         ///   the <see cref="DoWork"/> event handler.
         /// </para>
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The animation specified in the <see cref="Animation"/> property
-        /// could not be loaded.</exception>
         public void Show()
         {
             Show(null);
@@ -252,8 +263,6 @@ namespace Ookii.Dialogs.Wpf
         ///   the <see cref="DoWork"/> event handler.
         /// </para>
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The animation specified in the <see cref="Animation"/> property
-        /// could not be loaded.</exception>
         public void Show(object argument)
         {
             RunProgressDialog(IntPtr.Zero, argument);
@@ -265,7 +274,7 @@ namespace Ookii.Dialogs.Wpf
         /// <remarks>
         /// <para>
         ///   The ShowDialog function for most .Net dialogs will not return until the dialog is closed. However,
-        ///   the <see cref="ShowDialog()"/> function for the <see cref="ProgressDialog"/> class will return immediately.
+        ///   the <see cref="ShowDialog()"/> function for the <see cref="OperationsProgressDialog"/> class will return immediately.
         ///   The parent window will be disabled as with all modal dialogs.
         /// </para>
         /// <para>
@@ -282,8 +291,6 @@ namespace Ookii.Dialogs.Wpf
         ///   When possible, it is recommended that you use a modeless dialog using the <see cref="Show()"/> function.
         /// </para>
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The animation specified in the <see cref="Animation"/> property
-        /// could not be loaded.</exception>
         public void ShowDialog()
         {
             ShowDialog(null, null);
@@ -313,8 +320,6 @@ namespace Ookii.Dialogs.Wpf
         ///   When possible, it is recommended that you use a modeless dialog using the <see cref="Show()"/> function.
         /// </para>
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The animation specified in the <see cref="Animation"/> property
-        /// could not be loaded, or the operation is already running.</exception>
         public void ShowDialog(Window owner)
         {
             ShowDialog(owner, null);
@@ -345,8 +350,6 @@ namespace Ookii.Dialogs.Wpf
         ///   When possible, it is recommended that you use a modeless dialog using the <see cref="Show()"/> function.
         /// </para>
         /// </remarks>
-        /// <exception cref="InvalidOperationException">The animation specified in the <see cref="Animation"/> property
-        /// could not be loaded, or the operation is already running.</exception>
         public void ShowDialog(Window owner, object argument)
         {
             RunProgressDialog(owner == null ? NativeMethods.GetActiveWindow() : new WindowInteropHelper(owner).Handle,
@@ -395,7 +398,7 @@ namespace Ookii.Dialogs.Wpf
                 shCurrent = null;
             }
 
-            _backgroundWorker.ReportProgress(-2, new ProgressChangedData
+            _backgroundWorker.ReportProgress(UPDATE_LOCATIONS, new ProgressChangedData
             {
                 Source = shSource,
                 Destination = shDestination,
@@ -445,7 +448,16 @@ namespace Ookii.Dialogs.Wpf
             if (_dialog == null)
                 throw new InvalidOperationException(Resources.ProgressDialogNotRunningError);
 
-            _dialog.SetOperation(operation);
+            int hr = _dialog.SetOperation(operation);
+            Marshal.ThrowExceptionForHR(hr);
+        }
+
+        public void SetMode(OperationsProgressDialogMode mode)
+        {
+            if (_dialog == null)
+                throw new InvalidOperationException(Resources.ProgressDialogNotRunningError);
+            int hr = _dialog.SetMode(mode);
+            Marshal.ThrowExceptionForHR(hr);
         }
 
         /// <summary>
@@ -483,7 +495,6 @@ namespace Ookii.Dialogs.Wpf
             if (_backgroundWorker.IsBusy)
                 throw new InvalidOperationException(Resources.ProgressDialogRunning);
 
-            _cancellationPending = false;
             _dialog = new Interop.OperationsProgressDialog();
 
             OperationsProgressDialogFlags flags = OperationsProgressDialogFlags.Normal;
@@ -512,12 +523,11 @@ namespace Ookii.Dialogs.Wpf
                 flags |= OperationsProgressDialogFlags.EnablePause;
             if (AllowUndo)
                 flags |= OperationsProgressDialogFlags.AllowUndo;
-            if (NoTime)
-                flags |= OperationsProgressDialogFlags.NoTime;
             if (NoMultiDayEstimates)
                 flags |= OperationsProgressDialogFlags.NoMultiDayEstimates;
 
-            _dialog.StartProgressDialog(owner, flags);
+            int hr = _dialog.StartProgressDialog(owner, flags);
+            Marshal.ThrowExceptionForHR(hr);
             _backgroundWorker.RunWorkerAsync(argument);
         }
 
@@ -528,35 +538,43 @@ namespace Ookii.Dialogs.Wpf
 
         private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            _dialog.StopProgressDialog();
+            int hr = _dialog.StopProgressDialog();
+            Marshal.ThrowExceptionForHR(hr);
             Marshal.ReleaseComObject(_dialog);
             _dialog = null;
-            OnRunWorkerCompleted(new RunWorkerCompletedEventArgs((!e.Cancelled && e.Error == null) ? e.Result : null,
+            OnRunWorkerCompleted(new RunWorkerCompletedEventArgs(!e.Cancelled && e.Error == null ? e.Result : null,
                 e.Error, e.Cancelled));
         }
 
         private void _backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            int hr = _dialog.GetOperationStatus(out OperationsProgressDialogStatus status);
-            if (hr < 0)
-                Marshal.ThrowExceptionForHR(hr);
-            _cancellationPending = status == OperationsProgressDialogStatus.Cancelled;
+            int hr;
+
+            if (e.ProgressPercentage == UPDATE_STATUS)
+            {
+                hr = _dialog.GetOperationStatus(out _status);
+                if (Debugger.IsAttached)
+                    Marshal.ThrowExceptionForHR(hr);
+                return;
+            }
 
             if (!(e.UserState is ProgressChangedData data))
                 return;
-
+            
             // ReportProgress doesn't allow values outside this range. However, CancellationPending will call
             // BackgroundWorker.ReportProgress directly with a value that is outside this range to update the value of the property.
             if (e.ProgressPercentage >= 0 && e.ProgressPercentage <= 100)
             {
-                _dialog.UpdateProgress((ulong) data.CurrentProgress, (ulong) data.TotalProgress,
+                hr = _dialog.UpdateProgress((ulong) data.CurrentProgress, (ulong) data.TotalProgress,
                     (ulong) data.ProcessedSize, (ulong) data.TotalSize,
                     (ulong) data.ProcessedItems, (ulong) data.TotalItems);
+                Marshal.ThrowExceptionForHR(hr);
                 OnProgressChanged(new ProgressChangedEventArgs(e.ProgressPercentage, data.UserState));
             }
-            else if (e.ProgressPercentage == -2)
+            else
             {
-                _dialog.UpdateLocations(data.Source, data.Destination, data.Current);
+                hr = _dialog.UpdateLocations(data.Source, data.Destination, data.Current);
+                Marshal.ThrowExceptionForHR(hr);
                 OnProgressChanged(new ProgressChangedEventArgs(e.ProgressPercentage, data.UserState));
             }
         }

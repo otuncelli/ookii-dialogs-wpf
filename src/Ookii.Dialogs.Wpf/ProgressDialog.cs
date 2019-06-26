@@ -45,7 +45,7 @@ namespace Ookii.Dialogs.Wpf
         private bool _useCompactPathsForText;
         private bool _useCompactPathsForDescription;
         private SafeModuleHandle _currentAnimationModuleHandle;
-        private bool _cancellationPending;
+        private volatile bool _cancellationPending;
 
         /// <summary>
         /// Event raised when the dialog is displayed.
@@ -370,17 +370,17 @@ namespace Ookii.Dialogs.Wpf
         /// Gets or sets a value that indicates whether a regular or marquee style progress bar should be used.
         /// </summary>
         /// <value>
-        /// One of the values of <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle"/>. 
-        /// The default value is <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.ProgressBar"/>.
+        /// One of the values of <see cref="Wpf.ProgressBarStyle"/>. 
+        /// The default value is <see cref="Wpf.ProgressBarStyle.ProgressBar"/>.
         /// </value>
         /// <remarks>
         /// <note>
         ///   Operating systems older than Windows Vista do not support marquee progress bars on the progress dialog. On those operating systems, the
-        ///   progress bar will be hidden completely if this property is <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.MarqueeProgressBar"/>.
+        ///   progress bar will be hidden completely if this property is <see cref="Wpf.ProgressBarStyle.MarqueeProgressBar"/>.
         /// </note>
         /// <para>
-        ///   When this property is set to <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.ProgressBar" />, use the <see cref="ReportProgress(int)"/> method to set
-        ///   the value of the progress bar. When this property is set to <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.MarqueeProgressBar"/>
+        ///   When this property is set to <see cref="Wpf.ProgressBarStyle.ProgressBar" />, use the <see cref="ReportProgress(int)"/> method to set
+        ///   the value of the progress bar. When this property is set to <see cref="Wpf.ProgressBarStyle.MarqueeProgressBar"/>
         ///   you can still use the <see cref="ReportProgress(int,string,string)"/> method to update the text of the dialog,
         ///   but the percentage will be ignored.
         /// </para>
@@ -550,8 +550,8 @@ namespace Ookii.Dialogs.Wpf
         ///   Call this method from the <see cref="DoWork"/> event handler if you want to report progress.
         /// </para>
         /// <para>
-        ///   This method has no effect is <see cref="ProgressBarStyle"/> is <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.MarqueeProgressBar"/>
-        ///   or <see cref="Ookii.Dialogs.Wpf.ProgressBarStyle.None"/>.
+        ///   This method has no effect is <see cref="ProgressBarStyle"/> is <see cref="Wpf.ProgressBarStyle.MarqueeProgressBar"/>
+        ///   or <see cref="Wpf.ProgressBarStyle.None"/>.
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="percentProgress"/> is out of range.</exception>
@@ -698,7 +698,7 @@ namespace Ookii.Dialogs.Wpf
                 _currentAnimationModuleHandle = null;
             }
 
-            OnRunWorkerCompleted(new RunWorkerCompletedEventArgs((!e.Cancelled && e.Error == null) ? e.Result : null, e.Error, e.Cancelled));
+            OnRunWorkerCompleted(new RunWorkerCompletedEventArgs(!e.Cancelled && e.Error == null ? e.Result : null, e.Error, e.Cancelled));
         }
 
         private void _backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
